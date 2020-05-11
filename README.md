@@ -7,7 +7,8 @@ several files including:
 * <sample>.qc.csv
 
 In addition, `bedtools` should be run to generate a
-`<sample>.per_base_coverage.bed` file to generate QC data.
+`<sample>.per_base_coverage.bed` file to generate mean and median depth of
+coverage statistics.
 
 
 # Installation
@@ -21,6 +22,10 @@ pip install .
 
 # Usage
 The library consists of several functions that can be imported.
+```
+from ncov.parser.qc import get_qc_data, get_total_variants, get_coverage_stats,
+create_qc_summary_line, write_qc_summary, collect_qc_summary_data
+```
 
 
 # License
