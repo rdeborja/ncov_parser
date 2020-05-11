@@ -1,5 +1,0 @@
-Building DAG of jobs...
-InputFunctionException in line 83 of /Users/rdeborja/local/src/github.com/rdeborja/ncov_parser/ncov/parser/blah:
-AttributeError: 'Wildcards' object has no attribute 'sample'
-Wildcards:
-
