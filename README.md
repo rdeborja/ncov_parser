@@ -11,7 +11,7 @@ In addition, `bedtools` should be run to generate a
 coverage statistics.
 
 
-# Installation
+## Installation
 After downloading the repository, the package can be installed using `pip`:
 ```
 git clone git@github.com:rdeborja/ncov_parser.git
@@ -20,7 +20,7 @@ pip install .
 ```
 
 
-# Usage
+## Usage
 The library consists of several functions that can be imported.
 ```
 from ncov.parser.qc import get_qc_data, get_total_variants, get_coverage_stats,
@@ -28,6 +28,6 @@ create_qc_summary_line, write_qc_summary, collect_qc_summary_data
 ```
 
 
-# License
+## License
 MIT
 
