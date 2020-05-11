@@ -1,0 +1,8 @@
+Building DAG of jobs...
+MissingInputException in line 83 of /Users/rdeborja/local/src/github.com/rdeborja/ncov_parser/ncov/parser/blah:
+Missing input files for rule make_qc_summary:
+data/blah1.qc.csv
+data/blah2.qc.csv
+data/blah4.qc.csv
+data/blah3.qc.csv
+data/blah5.qc.csv

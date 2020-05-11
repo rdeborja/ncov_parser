@@ -1,0 +1,150 @@
+import glob
+import os
+
+configfile: "config.yaml"
+
+# detect samples based on sorted.bam, which is common between the ONT and Illumina pipeline
+bam_suffix = ".sorted.bam"
+
+def get_bam_pattern():
+    return config.get("bam_pattern", "{data_root}/{sample}.sorted.bam")
+
+def get_consensus_pattern():
+    return config.get("consensus_pattern", "{data_root}/{sample}.primertrimmed.consensus.fa")
+
+def get_metadata_file(wildcards):
+    return config.get("metadata", "")
+
+def get_sample_names():
+
+    # if defined in the config, use that
+    # otherwise we try to auto-detect based on the bam names
+    if "samples" in config:
+        return config["samples"]
+
+    # get all bams in the data directory based on the pattern
+    # the bam files follow
+    pattern = get_bam_pattern()
+
+    # form a glob we can use to get the bam files for each sample
+    gs = pattern.format(data_root=config["data_root"], sample="*")
+
+    bams = glob.glob(gs)
+    samples = list()
+    for b in bams:
+        f = os.path.basename(b)
+        fields = f.split(".")
+        if len(fields) > 4:
+            continue
+        samples.append(fields[0])
+
+    if len(samples) == 0:
+        print("Error: no samples found")
+        sys.exit(1)
+
+    return samples
+
+def get_bam_for_sample(wildcards):
+    bam_pattern = get_bam_pattern()
+    return bam_pattern.format(data_root=config["data_root"], sample=wildcards.sample)
+
+def get_tree_consensus_sequences(wildcards):
+    pattern = get_consensus_pattern()
+    consensus_sequences = [pattern.format(data_root=config["data_root"], sample=s) for s in get_sample_names()]
+
+    if "tree_include_consensus" in config:
+        consensus_sequences.append(config["tree_include_consensus"])
+
+    return consensus_sequences
+
+#
+# top-level rules
+#
+rule all_qc_sequencing:
+    input:
+        "qc_sequencing/covered_by_amplicon.pdf",
+        "qc_sequencing/alt_frequency.pdf",
+        "qc_sequencing/depth_by_position.pdf"
+
+rule all_qc_analysis:
+    input:
+        "qc_analysis/tree_snps.pdf"
+
+rule all_qc_by_ct:
+    input:
+        "qc_sequencing/amplicon_depth_by_ct.pdf",
+        "qc_analysis/genome_completeness_by_ct.pdf"
+
+rule qc_summary:
+    input:
+        "blah.tsv"
+
+rule make_qc_summary:
+    input:
+        #get_bam_for_sample
+        expand(config["data_root"] + "/{s}.sorted.bam", s=get_sample_names())
+    output:
+        "summary_qc.tsv"
+    params:
+        
+    shell:
+        "echo -e \"something\" >> {output};"
+
+#
+# generate coverage QC data using bedtools
+#
+rule make_amplicon_mean_coverage:
+    input:
+        get_bam_for_sample
+    output:
+        "qc_sequencing/{sample}.mean_coverage.bed"
+    params:
+        memory_per_thread="2G"
+    threads: 1
+    shell:
+        "echo -e \"reference_name\tstart\tend\tamplicon_id\tpool\tstrand\tmean_coverage\" > {output};"
+        "bedtools coverage -mean -a {config[amplicon_bed]} -b {input} >> {output}"
+
+rule make_amplicon_coverage:
+    input:
+        get_bam_for_sample
+    output:
+        "qc_sequencing/{sample}.amplicon_coverage.bed"
+    params:
+        memory_per_thread="2G"
+    threads: 1
+    shell:
+        "echo -e \"reference_name\tstart\tend\tamplicon_id\tpool\tstrand\tread_count\tcovered_bases\tamplicon_length\tfraction_covered\" > {output};"
+        "bedtools coverage -a {config[amplicon_bed]} -b {input} >> {output}"
+
+rule make_amplicon_per_base_coverage:
+    input:
+        get_bam_for_sample
+    output:
+        "qc_sequencing/{sample}.per_base_coverage.bed"
+    params:
+        memory_per_thread="2G"
+    threads: 1
+    shell:
+        "echo -e \"reference_name\tstart\tend\tamplicon_id\tpool\tstrand\tposition\tdepth\" > {output};"
+        "bedtools coverage -d -a {config[amplicon_bed]} -b {input} >> {output}"
+
+# pysam's index_filename option is broken so we have
+# to do some hacky symlinking to work around it
+rule make_tmp_bam:
+    input:
+        get_bam_for_sample
+    output:
+        "tmp_bam/{sample}.bam"
+    shell:
+        "ln -s ../{input} {output}"
+
+rule make_alleles:
+    input:
+        "qc_analysis/aligned.fasta"
+    output:
+        "qc_analysis/alleles.tsv"
+    params:
+        alleles_script = srcdir("../tree/align2alleles.py")
+    shell:
+        "python {params.alleles_script} --reference-name MN908947.3 {input} > {output}"

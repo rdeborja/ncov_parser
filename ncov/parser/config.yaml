@@ -1,0 +1,2 @@
+data_root: data
+bam_pattern: "{data_root}/{sample}.sorted.bam"
