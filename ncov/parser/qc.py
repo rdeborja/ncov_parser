@@ -6,6 +6,7 @@ generated file contains a header line and a data line with pre-defined columns.
 import re
 import statistics
 import argparse
+import glob
 
 def get_sample_names_from_bam():
     '''
@@ -32,21 +33,55 @@ def get_qc_data(file):
     return {"sample_name" : data[0], "pct_covered_bases" : data[2], "qc_pass" : data[6]}
 
 
-def get_total_variants(file):
+def get_total_variants(file, indel=False):
     '''
     A function that parses the iVar variants file and returns the total number
     of variants.
     '''
     counter = 0
+    counter_n = 0
+    counter_iupac = 0
     with open(file) as file_p:
         for line in file_p:
             if re.match("^REGION\tPOS\tREF", line):
                 # skip to the next line if header encountered
                 continue
-            counter += 1
-
+            # check if the variant is an indel and the option for counting
+            # indels
+            data = line.split("\t")
+            if indel:
+                if len(str(data[3])) > 1 or len(str(data[3])) == 1:
+                    counter += 1
+            elif not indel:
+                if len(str(data[3])) == 1:
+                    counter += 1
+                else:
+                    continue
+            # count N and IUPAC codes seperately
+            if is_variant_n(variant=str(data[3])):
+                counter_n += 1
+            elif is_variant_iupac(variant=str(data[3])):
+                counter_iupac += 1
     file_p.close()
-    return {"total_variants" : counter}
+    return {'total_variants' : counter, 'total_n' : counter_n, 'total_iupac' : counter_iupac}
+
+
+def is_variant_n(variant):
+    '''
+    A function to determine whether the mutation is N
+    '''
+    variant = str(variant).upper()
+    return re.search('[Nn]', variant)
+
+
+def is_variant_iupac(variant):
+    '''
+    A function to determine whether a variant is an IUPAC code, note that we
+    are treating N as a distinct value.
+    '''
+    variant = str(variant).upper()
+    iupac_codes = '[RYSWKMBDHV]'
+    return re.search(iupac_codes, variant) 
 
 
 def is_indel(variant):
@@ -54,7 +89,10 @@ def is_indel(variant):
     Check whether the variant from the <sample>.variants.tsv file is an indel.
     Note that indels will have a +/- in the ALT column of the file.
     '''
-    return re.search(["+-"], variant)
+    if len(variant) > 1:
+        return True
+    else:
+        return False
 
 
 def get_coverage_stats(file, indel=False):
@@ -77,16 +115,17 @@ def get_coverage_stats(file, indel=False):
     return {"mean" : mean_depth, "median" : median_depth}
 
 
-def create_qc_summary_line(var_file, qc_file, cov_file):
+def create_qc_summary_line(var_file, qc_file, cov_file, indel=True):
     '''
     A function that aggregates the different QC data into a single sample
     dictionary entry.
     '''
     summary = {}
-    summary.update(get_total_variants(file=var_file))
+    summary.update(get_total_variants(file=var_file, indel=indel))
     summary.update(get_qc_data(file=qc_file))
     summary.update(get_coverage_stats(file=cov_file))
     return summary
+
 
 def write_qc_summary(summary):
     '''
@@ -94,6 +133,8 @@ def write_qc_summary(summary):
     * sample name
     * % bases covered
     * total mutations
+    * total N mutations
+    * total IUPAC mutations
     * mean sequence depth
     * median sequence depth
     * iVar QC pass
@@ -102,6 +143,8 @@ def write_qc_summary(summary):
             summary['sample_name'],
             str(summary['pct_covered_bases']),
             str(summary['total_variants']),
+            str(summary['total_n']),
+            str(summary['total_iupac']),
             str(summary['mean']),
             str(summary['median']),
             str(summary['qc_pass'])])
@@ -111,6 +154,8 @@ def write_qc_summary(summary):
 def write_qc_summary_header(header=['sample_name', \
                                     'pct_covered_bases',\
                                     'total_variants', \
+                                    'total_n', \
+                                    'total_iupac', \
                                     'mean_depth', \
                                     'median_depth', \
                                     'qc_pass']):
@@ -120,11 +165,18 @@ def write_qc_summary_header(header=['sample_name', \
     print('\t'.join(header))
 
 
-def collect_qc_summary_data():
+def collect_qc_summary_data(dir, pattern='.summary.qc.tsv'):
     '''
     An aggregation function to collect individual sample based QC summary data
     and create a single file with all samples.
     '''
-    pass
-    
-    
+    files = glob.glob(dir + "/*" + pattern)
+    data = []
+    for file in files:
+        with open(file) as file_p:
+            for line in file_p:
+                # skip the header
+                if re.match("^sample_name\tpct_covered_bases\ttotal_variants", line):
+                    continue
+                data.append(line.rstrip())
+    return data
