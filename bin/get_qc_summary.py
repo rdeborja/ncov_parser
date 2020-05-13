@@ -16,6 +16,8 @@ parser.add_argument('-v', '--variants', \
         help='<sample>.variants.tsv file to process')
 parser.add_argument('-e', '--coverage', \
         help='<sample>.per_base_coverage.bed file to process')
+parser.add_argument('-i', '--indel', action='store_true', \
+        help='flag to determine whether to count indels')
 
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
@@ -26,7 +28,8 @@ args = parser.parse_args()
 qc_line = create_qc_summary_line(
         var_file=args.variants,
         qc_file=args.qc,
-        cov_file=args.coverage)
+        cov_file=args.coverage,
+        indel=args.indel)
 
 write_qc_summary_header()
 write_qc_summary(summary=qc_line)
