@@ -60,7 +60,7 @@ def is_indel(variant):
 def get_coverage_stats(file, indel=False):
     '''
     A function to calculate the depth of coverage across the genome from the
-    bedtools <sample>.per_base_coverage.bed file
+    bedtools <sample>.per_base_coverage.bed file.
     '''
     depth = []
     with open(file) as file_p:
@@ -75,6 +75,7 @@ def get_coverage_stats(file, indel=False):
     mean_depth = statistics.mean(depth)
     median_depth = statistics.median(depth)
     return {"mean" : mean_depth, "median" : median_depth}
+
 
 def create_qc_summary_line(var_file, qc_file, cov_file):
     '''
