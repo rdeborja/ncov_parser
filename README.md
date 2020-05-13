@@ -24,7 +24,8 @@ pip install .
 The library consists of several functions that can be imported.
 ```
 from ncov.parser.qc import get_qc_data, get_total_variants, get_coverage_stats,
-create_qc_summary_line, write_qc_summary, collect_qc_summary_data
+create_qc_summary_line, write_qc_summary, collect_qc_summary_data,
+write_qc_summary_header
 ```
 
 
