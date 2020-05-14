@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    scripts=['bin/get_qc_summary.py']
+    scripts=['bin/get_qc_summary.py', 'bin/collect_qc_summary.py']
 )
