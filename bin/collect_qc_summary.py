@@ -1,5 +1,5 @@
 '''
-
+A script for aggregating sample QC summary files into a single file.
 '''
 
 #!/usr/bin/env python
