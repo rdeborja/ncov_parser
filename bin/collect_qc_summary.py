@@ -1,8 +1,8 @@
+#!/usr/bin/env python
 '''
 A script for aggregating sample QC summary files into a single file.
 '''
 
-#!/usr/bin/env python
 
 import argparse
 import sys
