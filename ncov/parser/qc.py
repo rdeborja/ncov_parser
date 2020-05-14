@@ -5,16 +5,7 @@ generated file contains a header line and a data line with pre-defined columns.
 
 import re
 import statistics
-import argparse
 import glob
-
-def get_sample_names_from_bam():
-    '''
-    Get a list of samples from a directory containing BAM files.  Since the BAM
-    files are the main input for all analysis, we will use these unless a list
-    of sample names are provided in a config file.
-    '''
-    pass
 
 
 def get_qc_data(file):
@@ -81,7 +72,7 @@ def is_variant_iupac(variant):
     '''
     variant = str(variant).upper()
     iupac_codes = '[RYSWKMBDHV]'
-    return re.search(iupac_codes, variant) 
+    return re.search(iupac_codes, variant)
 
 
 def is_indel(variant):
@@ -89,13 +80,10 @@ def is_indel(variant):
     Check whether the variant from the <sample>.variants.tsv file is an indel.
     Note that indels will have a +/- in the ALT column of the file.
     '''
-    if len(variant) > 1:
-        return True
-    else:
-        return False
+    return len(variant) > 1
 
 
-def get_coverage_stats(file, indel=False):
+def get_coverage_stats(file):
     '''
     A function to calculate the depth of coverage across the genome from the
     bedtools <sample>.per_base_coverage.bed file.
@@ -140,14 +128,14 @@ def write_qc_summary(summary):
     * iVar QC pass
     '''
     summary_line = '\t'.join([
-            summary['sample_name'],
-            str(summary['pct_covered_bases']),
-            str(summary['total_variants']),
-            str(summary['total_n']),
-            str(summary['total_iupac']),
-            str(summary['mean']),
-            str(summary['median']),
-            str(summary['qc_pass'])])
+        summary['sample_name'],
+        str(summary['pct_covered_bases']),
+        str(summary['total_variants']),
+        str(summary['total_n']),
+        str(summary['total_iupac']),
+        str(summary['mean']),
+        str(summary['median']),
+        str(summary['qc_pass'])])
     print(summary_line + '\n')
 
 
@@ -165,12 +153,12 @@ def write_qc_summary_header(header=['sample_name', \
     print('\t'.join(header))
 
 
-def collect_qc_summary_data(dir, pattern='.summary.qc.tsv'):
+def collect_qc_summary_data(path, pattern='.summary.qc.tsv'):
     '''
     An aggregation function to collect individual sample based QC summary data
     and create a single file with all samples.
     '''
-    files = glob.glob(dir + "/*" + pattern)
+    files = glob.glob(path + "/*" + pattern)
     data = []
     for file in files:
         with open(file) as file_p:
