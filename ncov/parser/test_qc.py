@@ -7,9 +7,9 @@ class TestIndel(unittest.TestCase):
     def test_is_indel_succeed(self):
         self.assertEqual(is_indel("+A"), True, "Should be True, +A is an indel")
     def test_count_variants_no_indel(self):
-        self.assertEqual(get_total_variants(file="../../data/sampleA.variants.tsv", indel=False)["total_variants"], 9, "9 single nucleotide variants")
+        self.assertEqual(get_total_variants(file="data/sampleA.variants.tsv", indel=False)["total_variants"], 9, "9 single nucleotide variants")
     def test_count_variants_with_indel(self):
-        self.assertEqual(get_total_variants(file="../../data/sampleA.variants.tsv", indel=True)["total_variants"], 10, "10 variants")
+        self.assertEqual(get_total_variants(file="data/sampleA.variants.tsv", indel=True)["total_variants"], 10, "10 variants")
 
 if __name__ == '__main__':
     unittest.main()
