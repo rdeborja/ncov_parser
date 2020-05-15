@@ -202,7 +202,7 @@ def write_qc_summary(summary):
         str(summary['mean']),
         str(summary['median']),
         str(summary['qc_pass'])])
-    print(summary_line + '\n')
+    print(summary_line)
 
 
 def write_qc_summary_header(header=['sample_name', \
