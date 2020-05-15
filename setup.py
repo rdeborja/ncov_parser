@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rdeborja", # Replace with your own username
-    version="0.1.0",
+    name="ncov_parser", # Replace with your own username
+    version="0.2.0",
     author="Richard J. de Borja",
     author_email="richard.deborja@oicr.on.ca",
     description="A nCoV package for parsing analysis files",

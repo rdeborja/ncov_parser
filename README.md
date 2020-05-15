@@ -25,9 +25,28 @@ pip install .
 ## Usage
 The library consists of several functions that can be imported.
 ```
-from ncov.parser.qc import get_qc_data, get_total_variants, get_coverage_stats,
-create_qc_summary_line, write_qc_summary, collect_qc_summary_data,
-write_qc_summary_header
+from ncov.parser.qc import *
+```
+
+### Top levels scripts
+In the `bin` directory, several wrapper scripts exist to assist in generating
+QC metrics.
+
+To create sample level summary qc files, use the `create_sample_qc_summary.py`
+script:
+```
+create_sample_qc_summary.py --sample <sample name> --qc_dir <directory
+containing sample.qc.csv files> --variants_dir <directory containing
+sample.variants.tsv files> --coverage_dir <directory containing
+sample.per_base_coverage.bed files> [--indel]
+```
+Note the `--indel` flag should only be present if indels will be used in the
+calculation of variants.
+
+Once this is complete, we can use the `collect_qc_summary.py` script to
+aggregate the sample level summary files into a single run tab-separate file.
+```
+collect_qc_summary.py --path <path to sample.summary.qc.tsv files>
 ```
 
 

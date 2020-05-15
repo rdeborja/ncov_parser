@@ -12,6 +12,12 @@ def get_qc_data(file):
     '''
     A function to parse the COG-UK QC file and returns a data structure with the
     QC results.
+
+    Arguments:
+        * file (str): a string containing the path and filename of the <sample>.qc.csv file
+
+    Return Value:
+        * dict: returns a dictionary with keys "sample_name", "pct_covered_bases", "qc_pass"
     '''
     with open(file) as file_p:
         for line in file_p:
@@ -28,6 +34,16 @@ def get_total_variants(file, indel=False):
     '''
     A function that parses the iVar variants file and returns the total number
     of variants.
+
+    Arguments:
+        * file: a string containing the filename and path to the <sample>.variants.tsv file
+        * indel: a boolean to determine whether to process indels
+
+    Returns:
+        Function returns a dictionary containing the following keys:
+            * total_variants: total number of variants in the file
+            * total_n: total number of variants classified as 'N'
+            * total_iupac: total number of variants classified within IUPAC codes
     '''
     counter = 0
     counter_n = 0
@@ -60,6 +76,12 @@ def get_total_variants(file, indel=False):
 def is_variant_n(variant):
     '''
     A function to determine whether the mutation is N
+
+    Arguments:
+        * variant: a string representing the variant
+
+    Return Value:
+        Function returns a boolean
     '''
     variant = str(variant).upper()
     return re.search('[Nn]', variant)
@@ -69,6 +91,12 @@ def is_variant_iupac(variant):
     '''
     A function to determine whether a variant is an IUPAC code, note that we
     are treating N as a distinct value.
+
+    Arguments:
+        * variant: a string reprenting the variant
+
+    Return Value:
+        Function returns a boolean
     '''
     variant = str(variant).upper()
     iupac_codes = '[RYSWKMBDHV]'
@@ -79,6 +107,12 @@ def is_indel(variant):
     '''
     Check whether the variant from the <sample>.variants.tsv file is an indel.
     Note that indels will have a +/- in the ALT column of the file.
+
+    Arguments:
+        * variant: a string reprenting the variant
+
+    Return Value:
+        Function returns a boolean
     '''
     return len(variant) > 1
 
@@ -87,6 +121,15 @@ def get_coverage_stats(file):
     '''
     A function to calculate the depth of coverage across the genome from the
     bedtools <sample>.per_base_coverage.bed file.
+
+    Arguments:
+        * file: a string containing the filename and path to the
+                <sample>.per_sample_coverage.bed file
+
+    Return Value:
+        Function returns a dictionary with the following keys:
+            * mean_depth
+            * median_depth
     '''
     depth = []
     with open(file) as file_p:
@@ -107,6 +150,23 @@ def create_qc_summary_line(var_file, qc_file, cov_file, indel=True):
     '''
     A function that aggregates the different QC data into a single sample
     dictionary entry.
+
+    Arguments:
+        * var_file: full path to the <sample>.variants.tsv file
+        * qc_file: full path to the <sample>.qc.csv file
+        * cov_file: full path to the <sample>.per_base_coverage.bed file
+        * indel: boolean to determine whether to use indels in variant count
+
+    Return Value:
+        Return an aggregate dictionary containing:
+            * total_variants
+            * total_n
+            * total_iupac
+            * sample_name
+            * pct_covered_bases
+            * qc_pass
+            * mean
+            * median
     '''
     summary = {}
     summary.update(get_total_variants(file=var_file, indel=indel))
@@ -126,6 +186,12 @@ def write_qc_summary(summary):
     * mean sequence depth
     * median sequence depth
     * iVar QC pass
+
+    Arguments:
+        * header: a list containing the column header
+
+    Return Value:
+        None
     '''
     summary_line = '\t'.join([
         summary['sample_name'],
@@ -136,7 +202,7 @@ def write_qc_summary(summary):
         str(summary['mean']),
         str(summary['median']),
         str(summary['qc_pass'])])
-    print(summary_line + '\n')
+    print(summary_line)
 
 
 def write_qc_summary_header(header=['sample_name', \
