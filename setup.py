@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rdeborja", # Replace with your own username
+    name="ncov_parser", # Replace with your own username
     version="0.2.0",
     author="Richard J. de Borja",
     author_email="richard.deborja@oicr.on.ca",
