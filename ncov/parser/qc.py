@@ -95,18 +95,21 @@ def import_ct_data(file):
     Return Value:
         The function returns a dictionary with {"sample" : "ct"}
     '''
-    with open(file) as file_p:
-        tmp_data = []
-        data = {}
-        for line in file_p:
-            # skip the header if exists
-            if re.match("^sample\tct", line.lower()):
-                continue
-            line = line.strip()
-            tmp_data = line.split("\t")
-            data[tmp_data[0]] = tmp_data[1]
+    try:
+        with open(file) as file_p:
+            tmp_data = []
+            data = {}
+            for line in file_p:
+                # skip the header if exists
+                if re.match("^sample\tct", line.lower()):
+                    continue
+                line = line.strip()
+                tmp_data = line.split("\t")
+                data[tmp_data[0]] = tmp_data[1]
         file_p.close()
         return data
+    except:
+        return
 
 
 def is_variant_n(variant):
@@ -182,7 +185,7 @@ def get_coverage_stats(file):
     return {"mean" : mean_depth, "median" : median_depth}
 
 
-def create_qc_summary_line(var_file, qc_file, cov_file, meta_file, indel=True):
+def create_qc_summary_line(var_file, qc_file, cov_file, meta_file=None, indel=True):
     '''
     A function that aggregates the different QC data into a single sample
     dictionary entry.
@@ -216,9 +219,11 @@ def create_qc_summary_line(var_file, qc_file, cov_file, meta_file, indel=True):
     summary.update(get_coverage_stats(file=cov_file))
 
     # import the ct data from the metadata file and add the ct value to the summary dictionary
-    meta_data = import_ct_data(file=meta_file)
-    summary['ct'] = meta_data[summary['sample_name']]
-
+    try:
+        meta_data = import_ct_data(file=meta_file)
+        summary['ct'] = meta_data[summary['sample_name']]
+    except:
+        summary['ct'] = 'NA'
     return summary
 
 

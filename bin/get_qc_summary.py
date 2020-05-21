@@ -18,8 +18,8 @@ parser.add_argument('-e', '--coverage', \
         help='<sample>.per_base_coverage.bed file to process')
 parser.add_argument('-i', '--indel', action='store_true', \
         help='flag to determine whether to count indels')
-parser.add_argument('-m', '--meta', \
-        help='full path to the metadata YAML file')
+parser.add_argument('-m', '--meta', default=None, \
+        help='full path to the metadata file')
 
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
