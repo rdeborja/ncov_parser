@@ -289,6 +289,13 @@ def collect_qc_summary_data(path, pattern='.summary.qc.tsv'):
     '''
     An aggregation function to collect individual sample based QC summary data
     and create a single file with all samples.
+
+    Arguments:
+        * path:     full path to the <sample>.summary.qc.tsv files
+        * pattern:  file pattern for the sample files (default: .summary.qc.tsv)
+
+    Return Value:
+        data: a list containing the summary line data
     '''
     files = glob.glob(path + "/*" + pattern)
     data = []
@@ -296,7 +303,7 @@ def collect_qc_summary_data(path, pattern='.summary.qc.tsv'):
         with open(file) as file_p:
             for line in file_p:
                 # skip the header
-                if re.match("^sample_name\tpct_covered_bases\ttotal_variants", line):
+                if re.match("^sample_name\tpct_n_bases\tpct_covered_bases", line):
                     continue
                 data.append(line.rstrip())
     return data
