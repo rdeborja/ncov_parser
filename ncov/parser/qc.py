@@ -7,6 +7,7 @@ import re
 import statistics
 import glob
 import csv
+from Bio import SeqIO
 
 
 def get_qc_data(file):
@@ -141,6 +142,27 @@ def is_variant_iupac(variant):
     variant = str(variant).upper()
     iupac_codes = '[RYSWKMBDHV]'
     return re.search(iupac_codes, variant)
+
+
+def count_iupac_in_fasta(fasta):
+    '''
+    Count the number of IUPAC occurrences, not including [Nn], in the consensus
+    FASTA file.
+
+    Arguments:
+        * fasta:    FASTA reference file
+
+    Return Value:
+        The function returns an integer representing the number of IUPAC code
+        occurrences in the FASTA file.  Note that Ns were not considered.
+    '''
+    iupac_codes = '[RYSWKMBDHV]'
+    try:
+        for record in SeqIO.parse(fasta, 'fasta'):
+            iupac_count = re.subn(iupac_codes, repl='', string=str(record.seq))[1]
+        return iupac_count
+    except:
+        return "NA"
 
 
 def is_indel(variant):
