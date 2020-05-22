@@ -1,6 +1,7 @@
 import unittest
 from ncov.parser.qc import is_indel, get_total_variants, is_variant_iupac, \
-    is_variant_n, get_qc_data, import_ct_data, create_qc_summary_line
+    is_variant_n, get_qc_data, import_ct_data, create_qc_summary_line, \
+    count_iupac_in_fasta
 
 class TestIndel(unittest.TestCase):
     def test_is_indel_fail(self):
@@ -83,6 +84,11 @@ class TestIndel(unittest.TestCase):
         self.assertEqual(qc_summary['median_depth'], 682, 'median_depth is correct')
         self.assertEqual(qc_summary['ct'], 'NA', 'ct value is correct')
         self.assertEqual(qc_summary['qc_pass'], 'FALSE', 'qc_pass is correct')
+
+    def test_count_iupac_in_fasta(self):
+        iupac_file = 'data/tester.fa'
+        iupac_count = count_iupac_in_fasta(fasta=iupac_file)
+        self.assertEqual(iupac_count, 9, 'IUPAC count is correct')
 
 
 if __name__ == '__main__':
