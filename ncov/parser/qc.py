@@ -6,6 +6,7 @@ generated file contains a header line and a data line with pre-defined columns.
 import re
 import statistics
 import glob
+import csv
 
 
 def get_qc_data(file):
@@ -85,12 +86,17 @@ def get_total_variants(file, indel=False):
             'total_indel' : counter_indel}
 
 
-def import_ct_data(file):
+def import_ct_data(file, sample_id='sample', ct_id='ct'):
     '''
-    Obtain the name of the metadata YAML file and import the data.
+    Obtain the name of the metadata YAML file and import the data.  This
+    assumes a header exists in the file.
 
     Arguments:
-        * file: full path to the metadata YAML file
+        * file:         full path to the metadata YAML file
+        * sample_id:    the column label representing the sample name
+                        (default: 'sample')
+        * ct_id:        the column label representing the ct value
+                        (default: 'ct')
 
     Return Value:
         The function returns a dictionary with {"sample" : "ct"}
@@ -99,14 +105,9 @@ def import_ct_data(file):
         with open(file) as file_p:
             tmp_data = []
             data = {}
-            for line in file_p:
-                # skip the header if exists
-                if re.match("^sample\tct", line.lower()):
-                    continue
-                line = line.strip()
-                tmp_data = line.split("\t")
-                data[tmp_data[0]] = tmp_data[1]
-        file_p.close()
+            ct_reader = csv.DictReader(file_p, delimiter='\t')
+            for line in ct_reader:
+                data[line[sample_id]] = line[ct_id]
         return data
     except:
         return
@@ -180,9 +181,9 @@ def get_coverage_stats(file):
             data = line.split("\t")
             depth.append(int(data[7]))
     file_p.close()
-    mean_depth = statistics.mean(depth)
-    median_depth = statistics.median(depth)
-    return {"mean" : mean_depth, "median" : median_depth}
+    mean_depth = round(statistics.mean(depth), 1)
+    median_depth = round(statistics.median(depth), 1)
+    return {"mean_depth" : mean_depth, "median_depth" : median_depth}
 
 
 def create_qc_summary_line(var_file, qc_file, cov_file, meta_file=None, indel=True):
@@ -209,8 +210,8 @@ def create_qc_summary_line(var_file, qc_file, cov_file, meta_file=None, indel=Tr
             * pct_n_bases
             * pct_covered_bases
             * qc_pass
-            * mean
-            * median
+            * mean_depth
+            * median_depth
             * ct
     '''
     summary = {}
@@ -259,8 +260,8 @@ def write_qc_summary(summary):
         str(summary['total_indel']),
         str(summary['total_n']),
         str(summary['total_iupac']),
-        str(summary['mean']),
-        str(summary['median']),
+        str(summary['mean_depth']),
+        str(summary['median_depth']),
         str(summary['ct']),
         str(summary['qc_pass'])])
     print(summary_line)

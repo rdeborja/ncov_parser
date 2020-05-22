@@ -1,6 +1,6 @@
 # ncov_parser
 
-[![Build Status](https://travis-ci.com/rdeborja/ncov_parser.svg?branch=master)](https://travis-ci.com/rdeborja/ncov_parser)
+[![Build Status](https://travis-ci.com/rdeborja/ncov_parser.svg?branch=master)](https://travis-ci.com/rdeborja/ncov_parser) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The `ncov_parser` package provides a suite of tools to parse the files generated
 in the Nextflow workflow and provide a QC summary file.  The package requires

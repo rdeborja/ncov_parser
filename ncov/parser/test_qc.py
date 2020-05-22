@@ -1,5 +1,6 @@
 import unittest
-from ncov.parser.qc import is_indel, get_total_variants, is_variant_iupac, is_variant_n, get_qc_data, import_ct_data
+from ncov.parser.qc import is_indel, get_total_variants, is_variant_iupac, \
+    is_variant_n, get_qc_data, import_ct_data, create_qc_summary_line
 
 class TestIndel(unittest.TestCase):
     def test_is_indel_fail(self):
@@ -37,6 +38,51 @@ class TestIndel(unittest.TestCase):
         self.assertEqual(meta_data['sampleA'], "17.4")
         self.assertEqual(meta_data['sampleB'], "18.4")
         self.assertEqual(len(meta_data.keys()), 2)
+
+    def test_create_qc_summary_line(self):
+        qcfile = 'data/sampleA.qc.csv'
+        metafile = 'data/metadata.tsv'
+        varfile = 'data/sampleA.variants.tsv'
+        covfile = 'data/sampleA.per_base_coverage.bed'
+        qc_summary = create_qc_summary_line(var_file=varfile,
+                                            qc_file=qcfile,
+                                            cov_file=covfile,
+                                            meta_file=metafile,
+                                            indel=True)
+        self.assertEqual(qc_summary['sample_name'], 'sampleA', 'Sample name correctly identified as: sampleA')
+        self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        self.assertEqual(qc_summary['pct_covered_bases'], '68.01', 'pct_covered_bases is 68.01')
+        self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
+        self.assertEqual(qc_summary['total_snv'], 9, 'total_snv is correct')
+        self.assertEqual(qc_summary['total_indel'], 1, 'total_indel is correct')
+        self.assertEqual(qc_summary['total_n'], 2, 'total_n is correct')
+        self.assertEqual(qc_summary['total_iupac'], 4, 'total_iupac is correct')
+        self.assertEqual(qc_summary['mean_depth'], 679.4, 'mean_depth is correct')
+        self.assertEqual(qc_summary['median_depth'], 682, 'median_depth is correct')
+        self.assertEqual(qc_summary['ct'], '17.4', 'ct value is correct')
+        self.assertEqual(qc_summary['qc_pass'], 'FALSE', 'qc_pass is correct')
+
+    def test_create_qc_summary_line_no_meta(self):
+        qcfile = 'data/sampleA.qc.csv'
+        metafile = 'data/metadata.tsv'
+        varfile = 'data/sampleA.variants.tsv'
+        covfile = 'data/sampleA.per_base_coverage.bed'
+        qc_summary = create_qc_summary_line(var_file=varfile,
+                                            qc_file=qcfile,
+                                            cov_file=covfile,
+                                            indel=True)
+        self.assertEqual(qc_summary['sample_name'], 'sampleA', 'Sample name correctly identified as: sampleA')
+        self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        self.assertEqual(qc_summary['pct_covered_bases'], '68.01', 'pct_covered_bases is 68.01')
+        self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
+        self.assertEqual(qc_summary['total_snv'], 9, 'total_snv is correct')
+        self.assertEqual(qc_summary['total_indel'], 1, 'total_indel is correct')
+        self.assertEqual(qc_summary['total_n'], 2, 'total_n is correct')
+        self.assertEqual(qc_summary['total_iupac'], 4, 'total_iupac is correct')
+        self.assertEqual(qc_summary['mean_depth'], 679.4, 'mean_depth is correct')
+        self.assertEqual(qc_summary['median_depth'], 682, 'median_depth is correct')
+        self.assertEqual(qc_summary['ct'], 'NA', 'ct value is correct')
+        self.assertEqual(qc_summary['qc_pass'], 'FALSE', 'qc_pass is correct')
 
 
 if __name__ == '__main__':
