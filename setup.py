@@ -1,3 +1,6 @@
+'''
+Setup.py file for the ncov_parser package.
+'''
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -5,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ncov_parser", # Replace with your own username
-    version="0.3.1",
+    version="0.3.3",
     author="Richard J. de Borja",
     author_email="richard.deborja@oicr.on.ca",
     description="A nCoV package for parsing analysis files",
@@ -19,5 +22,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    scripts=['bin/get_qc_summary.py', 'bin/collect_qc_summary.py', 'bin/create_sample_qc_summary.py']
+    scripts=['bin/get_qc_summary.py',
+             'bin/collect_qc_summary.py',
+             'bin/create_sample_qc_summary.py']
 )
