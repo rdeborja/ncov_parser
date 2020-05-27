@@ -8,6 +8,8 @@ several files including:
 * <sample>.variants.tsv
 * <sample>.qc.csv
 * <sample>.per_base_coverage.bed
+* <sample>.primertrimmed.consensus.fa
+* <reference genome>.fa
 
 An optional metadata file with `ct` values can be included.
 
@@ -37,7 +39,11 @@ get_total_variants
 import_ct_data
 is_variant_n
 is_variant_iupac
+count_iupac_in_fasta
+get_fasta_sequence_length
+is_base_masked
 is_indel
+is_indel_triplet
 get_coverage_stats
 create_qc_summary_line
 write_qc_summary
@@ -49,14 +55,14 @@ collect_qc_summary_data
 In the `bin` directory, several wrapper scripts exist to assist in generating
 QC metrics.
 
-To create sample level summary qc files, use the `create_sample_qc_summary.py`
-script:
+To create sample level summary qc files, use the `get_qc_summary.py` script:
 ```
-create_sample_qc_summary.py --sample <sample name> --qc_dir <directory
-containing sample.qc.csv files> --variants_dir <directory containing
-sample.variants.tsv files> --coverage_dir <directory containing
-sample.per_base_coverage.bed files> [--indel] [--meta <metadata.tsv>]
+get_qc_summary.py --qc <sample>.qc.csv --variants <sample>.variants.tsv
+--coverage <sample>.per_base_coverage.bed --meta <metadata>.tsv
+--fasta <sample>.primertrimmed.consensus.fa --reference <reference genome>.fa
+[--indel] [--mask_start 100] [--mask_end 50]
 ```
+
 Note the `--indel` flag should only be present if indels will be used in the
 calculation of variants.
 
@@ -66,7 +72,8 @@ aggregate the sample level summary files into a single run tab-separate file.
 collect_qc_summary.py --path <path to sample.summary.qc.tsv files>
 ```
 
+Note that this tool has been used in conjunction with the [@jts `ncov-tools`](https://github.com/jts/ncov-tools)
+suite of tools. 
 
 ## License
 MIT
-
