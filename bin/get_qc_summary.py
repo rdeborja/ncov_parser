@@ -8,13 +8,15 @@ import argparse
 import sys
 from ncov.parser.qc import create_qc_summary_line, write_qc_summary, \
         write_qc_summary_header, import_ct_data, get_qc_data, \
-        get_coverage_stats, get_total_variants, count_iupac_in_fasta
+        get_coverage_stats, get_total_variants, count_iupac_in_fasta, \
+        get_qc_nanopore_data, get_total_variants_vcf
 
 
 parser = argparse.ArgumentParser(description="Tool for summarizing QC data")
-parser.add_argument('-c', '--qc', help='<sample>.qc.csv file to process')
+parser.add_argument('-c', '--qc', help='<sample>.qc.csv file to process',
+                    default=None)
 parser.add_argument('-v', '--variants',
-                    help='<sample>.variants.tsv file to process')
+                    help='<sample>.{variants.tsv, .vcf} file to process')
 parser.add_argument('-e', '--coverage',
                     help='<sample>.per_base_coverage.bed file to process')
 parser.add_argument('-i', '--indel', action='store_true',
@@ -29,19 +31,32 @@ parser.add_argument('--mask_start', default=100,
                     help='number of bases to mask at start of genome')
 parser.add_argument('--mask_end', default=50,
                     help='number of bases to mask at end of genome')
+parser.add_argument('-n', '--instrument',
+                    help='instrument used to sequence genomes',
+                    default='nanopore')
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
     sys.exit(1)
 args = parser.parse_args()
 ct_data = import_ct_data(file=args.meta)
 qc_line = {}
-qc_line.update(get_total_variants(file=args.variants,
-                                  reference=args.reference,
-                                  indel=args.indel,
-                                  start=1,
-                                  mask_start=int(args.mask_start),
-                                  mask_end=int(args.mask_end)))
-qc_line.update(get_qc_data(file=args.qc))
+if args.instrument == 'illumina':
+    qc_line.update(get_total_variants(file=args.variants,
+                                    reference=args.reference,
+                                    indel=args.indel,
+                                    start=1,
+                                    mask_start=int(args.mask_start),
+                                    mask_end=int(args.mask_end)))
+    qc_line.update(get_qc_data(file=args.qc))
+elif args.instrument == 'nanopore':
+    qc_line.update(get_total_variants_vcf(file=args.variants,
+                                          reference=args.reference,
+                                          indel=args.indel,
+                                          start=1,
+                                          mask_start=int(args.mask_start),
+                                          mask_end=int(args.mask_end)))
+    qc_line.update(get_qc_nanopore_data(fasta=args.fasta,
+                                        reference=args.reference))
 qc_line.update(get_coverage_stats(file=args.coverage))
 qc_line.update(count_iupac_in_fasta(fasta=args.fasta))
 try:
