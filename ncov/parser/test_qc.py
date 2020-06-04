@@ -5,7 +5,7 @@ import unittest
 from ncov.parser.qc import is_indel, get_total_variants, is_variant_n, \
     get_qc_data, import_ct_data, create_qc_summary_line, \
     count_iupac_in_fasta, get_fasta_sequence_length, is_base_masked, \
-    is_indel_triplet
+    is_indel_triplet, get_qc_nanopore_data, get_total_variants_vcf
 
 class TestQc(unittest.TestCase):
     '''
@@ -67,6 +67,38 @@ class TestQc(unittest.TestCase):
         self.assertEqual(qc_data['sample_name'], 'sampleA', 'Sample name is: sampleA')
         self.assertEqual(qc_data['pct_covered_bases'], '68.01', 'Percent bases covered: 68.01')
         self.assertEqual(qc_data['qc_pass'], 'FALSE', 'QC pass status: FAIL')
+
+    def test_get_qc_nanopore_data(self):
+        '''
+        Validate the output from the get_qc_nanopore_data
+        '''
+        fasta = 'data/sampleA.consensus.fa'
+        reference='data/reference.fa'
+        qc_data = get_qc_nanopore_data(fasta=fasta,
+                                       reference=reference)
+        self.assertEqual(qc_data['sample_name'], 'sampleA', 'valid sample name')
+        self.assertEqual(qc_data['pct_n_bases'], '10.08', 'valid pct_n_bases')
+        self.assertEqual(qc_data['pct_covered_bases'], 'NA',
+                         'valid pct_covered_bases')
+        self.assertEqual(qc_data['qc_pass'], 'NA', 'valid qc_pass value')
+
+    def test_get_total_variants_vcf(self):
+        '''
+        Test the output from the get_total_variants_vcf function.
+        '''
+        vcf_file = 'data/sampleA.pass.vcf'
+        reference = 'data/tester.fa'
+        vars = get_total_variants_vcf(file=vcf_file, reference=reference,
+                                      mask_start=20, mask_end=20, indel=True)
+        self.assertEqual(vars['total_variants'], 8, 'valid number of variants')
+        self.assertEqual(vars['total_snv'], 5, 'valid number of snv')
+        self.assertEqual(vars['total_indel'], 3, 'valid number of indels')
+        self.assertEqual(vars['total_snv_masked'], 3, 'valid number of masked snvs')
+        self.assertEqual(vars['total_indel_masked'], 1,
+                         'valid number of masked indels')
+        self.assertEqual(vars['total_indel_triplet'], 1,
+                         'valid number of indel triplets')
+
 
     def test_import_metadata(self):
         '''
