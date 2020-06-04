@@ -72,7 +72,7 @@ class TestQc(unittest.TestCase):
         '''
         Validate the output from the get_qc_nanopore_data
         '''
-        fasta = 'data/sampleA.consensus.fa'
+        fasta = 'data/sampleA.consensus.fasta'
         reference='data/reference.fa'
         qc_data = get_qc_nanopore_data(fasta=fasta,
                                        reference=reference)
