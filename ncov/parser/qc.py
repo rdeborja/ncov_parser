@@ -37,7 +37,7 @@ def get_qc_data(file):
             'qc_pass' : data[6]}
 
 
-def get_qc_nanopore_data(fasta, reference):
+def get_qc_nanopore_data(fasta, reference, consensus_suffix='.consensus.fa'):
     '''
     In the currently pipeline, the <sample>.qc.csv file is not generated for
     nanopore runs.  We can generate the pct_n_bases and the sample_name and
@@ -48,7 +48,7 @@ def get_qc_nanopore_data(fasta, reference):
     pct_n_bases = ''
     try:
         qc_data.update(count_iupac_in_fasta(fasta=fasta))
-        sample_name = re.sub('[.consensus.fa, .consensus.fasta]', '', os.path.basename(fasta))
+        sample_name = re.sub('\.consensus\.fasta', '', os.path.basename(fasta))
         for record in SeqIO.parse(reference, 'fasta'):
             genome_length = len(str(record.seq))
         pct_n_bases = float(qc_data['total_n']) / genome_length * 100
