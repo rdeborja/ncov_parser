@@ -90,9 +90,9 @@ class TestQc(unittest.TestCase):
         reference = 'data/tester.fa'
         vars = get_total_variants_vcf(file=vcf_file, reference=reference,
                                       mask_start=20, mask_end=20, indel=True)
-        self.assertEqual(vars['total_variants'], 8, 'valid number of variants')
+        self.assertEqual(vars['total_variants'], 9, 'valid number of variants')
         self.assertEqual(vars['total_snv'], 5, 'valid number of snv')
-        self.assertEqual(vars['total_indel'], 3, 'valid number of indels')
+        self.assertEqual(vars['total_indel'], 4, 'valid number of indels')
         self.assertEqual(vars['total_snv_masked'], 3, 'valid number of masked snvs')
         self.assertEqual(vars['total_indel_masked'], 1,
                          'valid number of masked indels')
