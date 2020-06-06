@@ -89,7 +89,11 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
             counter += 1
             if var.is_indel:
                 counter_indel += 1
+                alt_allele = str(var.ALT[0])
+
                 if is_indel_triplet(str(var.ALT[0])):
+                    counter_indel_triplet += 1
+                elif is_indel_triplet(str(var.REF)):
                     counter_indel_triplet += 1
                 if genome_length > 0:
                     if is_base_masked(pos=int(var.POS),
@@ -125,6 +129,23 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
             'total_indel_triplet' : counter_indel_triplet,
             'genome_length' : genome_length}
 
+
+def get_indel_sequence(indel):
+    '''
+    Indels in VCF files use replacement sequences:
+        * Sequence REF=GTG and ALT=G is a deletion of TG
+        * Sequence REF=G and ALT=GTG is an insertion of TG
+
+    Arguments:
+        * indel: string containing the indel in the VCF record
+
+    Return Value:
+        Returns a string containing the actual inserted/deleted sequence
+    '''
+    if len(str(indel)) > 1:
+        return str(indel[1:len(indel)])
+    else:
+        return str(indel)
 
 
 def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
