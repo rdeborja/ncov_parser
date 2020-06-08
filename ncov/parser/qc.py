@@ -62,6 +62,27 @@ def get_qc_nanopore_data(fasta, reference, consensus_suffix='.consensus.fa'):
             'qc_pass' : 'NA'}
 
 
+def create_vcf_variant_id(var):
+    '''
+    Create a variant ID consisting of position, reference allele,
+    alternate allele as a concatenated string.  Note that the alternate
+    allele is provided as a list and needs to be set as a string
+    and merged.
+
+    Arguments:
+        * var: a VCF record object from pyvcf
+
+    Return Value:
+        Returns a string containing a concatenation of variant
+        object identifiers.
+    '''
+    var_alt = []
+    for _var in var.ALT:
+        var_alt.append(str(_var))
+    var_alt_str = ''.join(var_alt)
+    return '_'.join([str(var.POS), var.REF, var_alt_str])
+
+
 def get_total_variants_vcf(file, reference, start=1, mask_start=100,
                            mask_end=50, indel=True):
     '''
@@ -75,7 +96,7 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
     counter_indel_masked = 0
     genome_length = 0
     counter_indel_triplet = 0
-
+    var_dict = {}
     try:
         for record in SeqIO.parse(reference, 'fasta'):
             genome_length = len(str(record.seq))
@@ -84,6 +105,13 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
 
     vcf_reader = vcf.Reader(filename=file)
     for var in vcf_reader:
+        # create a unique variant identifier for de-duplication
+        var_id = create_vcf_variant_id(var=var)
+        if var_id in var_dict:
+            continue
+        else:
+            var_dict[var_id] = 1
+
         # keep a count of total variants
         if indel:
             counter += 1
