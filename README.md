@@ -36,6 +36,7 @@ Similarly, you can import only those functions of interesting, this can include:
 ```
 get_qc_data
 get_total_variants
+get_total_variants_vcf
 import_ct_data
 is_variant_n
 is_variant_iupac
@@ -60,11 +61,15 @@ To create sample level summary qc files, use the `get_qc_summary.py` script:
 get_qc_summary.py --qc <sample>.qc.csv --variants <sample>.variants.tsv
 --coverage <sample>.per_base_coverage.bed --meta <metadata>.tsv
 --fasta <sample>.primertrimmed.consensus.fa --reference <reference genome>.fa
-[--indel] [--mask_start 100] [--mask_end 50]
+[--indel] [--mask_start 100] [--mask_end 50] [-n | --instrument <nanopore,
+illumina>]
 ```
 
-Note the `--indel` flag should only be present if indels will be used in the
-calculation of variants.
+Notes:
+* The `--indel` flag should only be present if indels will be used in the
+  calculations of variants
+* Nanopore runs produce a `vcf` file and Illumina runs produce a `variants.tsv`
+  file.
 
 Once this is complete, we can use the `collect_qc_summary.py` script to
 aggregate the sample level summary files into a single run tab-separate file.
