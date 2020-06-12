@@ -22,17 +22,17 @@ def get_qc_data(file):
         * dict: returns a dictionary with keys "sample_name", "pct_covered_bases", "qc_pass"
     '''
     with open(file) as file_p:
-        for line in file_p:
-            # skip the header
-            if re.match("^sample_name", line):
-                continue
-            line = line.strip()
-            data = line.split(",")
+        qc_reader = csv.DictReader(file_p, delimiter=',')
+        for line in qc_reader:
+            sample_name = line['sample_name']
+            pct_n_bases = line['pct_N_bases']
+            pct_covered_bases = line['pct_covered_bases']
+            qc_pass = line['qc_pass']
     file_p.close()
-    return {'sample_name' : data[0],
-            'pct_n_bases' : data[1],
-            'pct_covered_bases' : data[2],
-            'qc_pass' : data[6]}
+    return {'sample_name' : sample_name,
+            'pct_n_bases' : pct_n_bases,
+            'pct_covered_bases' : pct_covered_bases,
+            'qc_pass' : qc_pass}
 
 
 def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
