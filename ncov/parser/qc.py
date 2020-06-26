@@ -112,6 +112,11 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
         else:
             var_dict[var_id] = 1
 
+        # check if variant position is masked
+        base_masked = is_base_masked(pos=int(var.POS),
+                                     end=genome_length,
+                                     mask_start=mask_start,
+                                     mask_end=mask_end)
         # keep a count of total variants
         if indel:
             counter += 1
@@ -122,29 +127,20 @@ def get_total_variants_vcf(file, reference, start=1, mask_start=100,
                 elif is_indel_triplet(re.sub('^.', '', str(var.REF))):
                     counter_indel_triplet += 1
                 if genome_length > 0:
-                    if is_base_masked(pos=int(var.POS),
-                                        end=genome_length,
-                                        mask_start=mask_start,
-                                        mask_end=mask_end):
-                        counter_indel_masked += 1                        
+                    if base_masked:
+                        counter_indel_masked += 1
             if var.is_snp:
                 counter_snv += 1
-                if is_base_masked(pos=int(var.POS),
-                                  end=genome_length,
-                                  mask_start=mask_start,
-                                  mask_end=mask_end):
+                if base_masked:
                     counter_snv_masked += 1
         elif not indel:
             if var.is_snp:
                 counter += 1
                 counter_snv += 1
-                if is_base_masked(pos=int(var.POS),
-                                  end=genome_length,
-                                  mask_start=mask_start,
-                                  mask_end=mask_end):
+                if base_masked:
                     counter_snv_masked += 1
             if var.is_indel:
-                continue        
+                continue
         else:
             continue
     return {'total_variants' : counter,
@@ -211,43 +207,35 @@ def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
     except:
         genome_length = 0
     with open(file) as file_p:
-        for line in file_p:
-            if re.match("^REGION\tPOS\tREF", line):
-                # skip to the next line if header encountered
-                continue
+        var_reader = csv.DictReader(file_p, delimiter='\t')
+        for data in var_reader:
             # check if the variant is an indel and the option for counting
             # indels
-            data = line.split("\t")
+            base_masked = is_base_masked(pos=int(data['POS']),
+                                         end=genome_length,
+                                         mask_start=mask_start,
+                                         mask_end=mask_end)
             if indel:
-                if len(str(data[3])) > 1:
+                if len(str(data['ALT'])) > 1:
                     counter += 1
                     counter_indel += 1
-                    if is_indel_triplet(str(data[3])):
+                    if is_indel_triplet(str(data['ALT'])):
                         counter_indel_triplet += 1
                     if genome_length > 0:
-                        if is_base_masked(pos=int(data[1]),
-                                          end=genome_length,
-                                          mask_start=mask_start,
-                                          mask_end=mask_end):
+                        if base_masked:
                             counter_indel_masked += 1
-                elif len(str(data[3])) == 1:
+                elif len(str(data['ALT'])) == 1:
                     counter += 1
                     counter_snv += 1
                     if genome_length > 0:
-                        if is_base_masked(pos=int(data[1]),
-                                          end=genome_length,
-                                          mask_start=mask_start,
-                                          mask_end=mask_end):
+                        if base_masked:
                             counter_snv_masked += 1
             elif not indel:
-                if len(str(data[3])) == 1:
+                if len(str(data['ALT'])) == 1:
                     counter += 1
                     counter_snv += 1
                     if genome_length > 0:
-                        if is_base_masked(pos=int(data[1]),
-                                          end=genome_length,
-                                          mask_start=mask_start,
-                                          mask_end=mask_end):
+                        if base_masked:
                             counter_snv_masked += 1
                 else:
                     continue
