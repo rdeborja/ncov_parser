@@ -35,7 +35,7 @@ def get_qc_data(file):
             'qc_pass' : qc_pass}
 
 
-def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
+def get_total_variants(file, reference, mask_start=100, mask_end=50,
                        indel=False):
     '''
     A function that parses the iVar variants file and returns the total number
@@ -45,7 +45,6 @@ def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
         * file:         a string containing the filename and path to the
                         <sample>.variants.tsv file
         * reference:    full path to the reference FASTA file
-        * start:        genome start position (default: 1)
         * mask_start:   bases to mask at beginning of genome (default: 100)
         * mask_end:     bases to mask at end of genome (default: 50)
         * indel:        a boolean to determine whether to process indels
