@@ -74,13 +74,6 @@ def get_total_variants(file, reference, start=1, mask_start=100, mask_end=50,
     with open(file) as file_p:
         variant_reader = csv.DictReader(file_p, delimiter='\t')
         for data in variant_reader:
-        # for line in file_p:
-            # if re.match("^REGION\tPOS\tREF", line):
-                # skip to the next line if header encountered
-                # continue
-            # check if the variant is an indel and the option for counting
-            # indels
-            # data = line.split("\t")
             base_masked = is_base_masked(pos=int(data['POS']),
                                          end=genome_length,
                                          mask_start=mask_start,
