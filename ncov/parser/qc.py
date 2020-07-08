@@ -287,13 +287,9 @@ def get_coverage_stats(file):
     '''
     depth = []
     with open(file) as file_p:
-        for line in file_p:
-            if re.match("^reference_name\tstart\tend", line):
-                # skip to the next line if header encountered
-                continue
-            line = line.strip()
-            data = line.split("\t")
-            depth.append(int(data[7]))
+        cov_reader = csv.DictReader(file_p, delimiter='\t')
+        for data in cov_reader:
+            depth.append(int(data['depth']))
     file_p.close()
     mean_depth = round(statistics.mean(depth), 1)
     median_depth = round(statistics.median(depth), 1)
