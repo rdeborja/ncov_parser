@@ -38,7 +38,6 @@ qc_line = {}
 qc_line.update(get_total_variants(file=args.variants,
                                   reference=args.reference,
                                   indel=args.indel,
-                                  start=1,
                                   mask_start=int(args.mask_start),
                                   mask_end=int(args.mask_end)))
 qc_line.update(get_qc_data(file=args.qc))
