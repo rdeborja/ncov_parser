@@ -111,14 +111,37 @@ def get_total_variants(file, reference, mask_start=100, mask_end=50,
             'genome_length' : genome_length}
 
 
-def get_variant_dictionary():
+def import_metadata(file, sample_id='sample', ct_id='ct', date_id='date',
+    delimiter='\t'):
     '''
-    Create a dictionary of variants per sample.
+    Import the metadata file.
+
+    Arguments:
+        * file:         full path to the metadata file
+        * sample_id:    the column label representing the sample name
+                        (default: 'sample')
+        * ct_id:        the column label representing the ct value
+                        (default: 'ct')
+        * date:         the column label representing the date value
+                        (default: 'date')
+        * delimiter:    the file delimiter in the text file (default: '\t')
+
+    Return Value:
+        Returns a dictionary containing metadata
     '''
+    try:
+        with open(file) as file_p:
+            data = {}
+            meta_reader = csv.DictReader(file_p, delimiter=delimiter)
+            for line in meta_reader:
+                data[line[sample_id]] = {'ct': line[ct_id], 'date':
+                    line[date_id]}
+            return data
+    except:
+        return {'ct' : 'NA', date: 'NA'}
 
 
-
-def import_ct_data(file, sample_id='sample', ct_id='ct'):
+def import_ct_data(file, sample_id='sample', ct_id='ct', delimiter='\t'):
     '''
     Obtain the name of the metadata YAML file and import the data.  This
     assumes a header exists in the file.
@@ -136,10 +159,10 @@ def import_ct_data(file, sample_id='sample', ct_id='ct'):
     try:
         with open(file) as file_p:
             data = {}
-            ct_reader = csv.DictReader(file_p, delimiter='\t')
+            ct_reader = csv.DictReader(file_p, delimiter=delimiter)
             for line in ct_reader:
                 data[line[sample_id]] = line[ct_id]
-        return data
+            return data
     except:
         return {'ct' : 'NA'}
 
@@ -324,10 +347,11 @@ def create_qc_summary_line(var_file, qc_file, cov_file, meta_file=None,
             * sample_name
             * pct_n_bases
             * pct_covered_bases
-            * qc_pass
             * mean_depth
             * median_depth
             * ct
+            * date
+            * qc_pass
     '''
     summary = {}
     summary.update(get_total_variants(file=var_file,
@@ -339,12 +363,15 @@ def create_qc_summary_line(var_file, qc_file, cov_file, meta_file=None,
     summary.update(get_coverage_stats(file=cov_file))
     summary.update(count_iupac_in_fasta(fasta=fasta))
 
-    # import the ct data from the metadata file and add the ct value to the summary dictionary
+    # import the ct and collection date from the metadata file
     try:
-        meta_data = import_ct_data(file=meta_file)
-        summary['ct'] = meta_data[summary['sample_name']]
+        #meta_data = import_ct_data(file=meta_file)
+        meta_data = import_metadata(file=meta_file)
+        summary['ct'] = meta_data[summary['sample_name']]['ct']
+        summary['date'] = meta_data[summary['sample_name']]['date']
     except:
         summary['ct'] = 'NA'
+        summary['date'] = 'NA'
     return summary
 
 
@@ -363,12 +390,15 @@ def write_qc_summary(summary):
     * total IUPAC mutations
     * mean sequence depth
     * median sequence depth
+    * cycle threshold
+    * collection date
     * iVar QC pass
 
     Arguments:
         * summary:  dictionary containing the keys sample_name, pct_n_bases,
                     pct_covered_bases, total_variants, total_snv, total_indel,
-                    total_n, total_iupac, mean_depth, median_depth, ct, qc_pass
+                    total_n, total_iupac, mean_depth, median_depth, ct, date,
+                    qc_pass
 
     Return Value:
         None
@@ -388,6 +418,7 @@ def write_qc_summary(summary):
         str(summary['mean_depth']),
         str(summary['median_depth']),
         str(summary['ct']),
+        str(summary['date']),
         str(summary['qc_pass'])])
     print(summary_line)
 
@@ -406,6 +437,7 @@ def write_qc_summary_header(header=['sample_name',
                                     'mean_depth',
                                     'median_depth',
                                     'ct',
+                                    'date',
                                     'qc_pass']):
     '''
     Write the header for the QC summary data
