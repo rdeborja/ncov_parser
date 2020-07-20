@@ -44,8 +44,9 @@ qc_line.update(get_qc_data(file=args.qc))
 qc_line.update(get_coverage_stats(file=args.coverage))
 qc_line.update(count_iupac_in_fasta(fasta=args.fasta))
 try:
-    meta_data = import_ct_data(file=args.meta)
-    qc_line['ct'] = meta_data[qc_line['sample_name']]
+    meta_data = import_metadata(file=args.meta)
+    qc_line['ct'] = meta_data[qc_line['sample_name']]['ct']
+    qc_line['date'] = meta_data[qc_line['sample_name']]['date']
 except:
     qc_line['ct'] = 'NA'
 
