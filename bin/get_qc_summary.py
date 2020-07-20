@@ -49,6 +49,7 @@ try:
     qc_line['date'] = meta_data[qc_line['sample_name']]['date']
 except:
     qc_line['ct'] = 'NA'
+    qc_line['date'] = 'NA'
 
 write_qc_summary_header()
 write_qc_summary(summary=qc_line)
