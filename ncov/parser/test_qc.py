@@ -105,6 +105,7 @@ class TestQc(unittest.TestCase):
         self.assertEqual(qc_summary['mean_depth'], 679.4, 'mean_depth is correct')
         self.assertEqual(qc_summary['median_depth'], 682, 'median_depth is correct')
         self.assertEqual(qc_summary['ct'], '17.4', 'ct value is correct')
+        self.assertEqual(qc_summary['date'], '2020-03-02', 'ct value is correct')
         self.assertEqual(qc_summary['qc_pass'], 'FALSE', 'qc_pass is correct')
 
     def test_create_qc_summary_line_no_meta(self):

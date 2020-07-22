@@ -6,10 +6,7 @@ A Python package for summarizing QC data from the ncov-tools pipeline.
 
 import argparse
 import sys
-from ncov.parser.qc import create_qc_summary_line, write_qc_summary, \
-        write_qc_summary_header, import_ct_data, get_qc_data, \
-        get_coverage_stats, get_total_variants, count_iupac_in_fasta
-
+import ncov.parser.qc as qc
 
 parser = argparse.ArgumentParser(description="Tool for summarizing QC data")
 parser.add_argument('-c', '--qc', help='<sample>.qc.csv file to process')
@@ -33,21 +30,22 @@ if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
     sys.exit(1)
 args = parser.parse_args()
-ct_data = import_ct_data(file=args.meta)
 qc_line = {}
-qc_line.update(get_total_variants(file=args.variants,
+qc_line.update(qc.get_total_variants(file=args.variants,
                                   reference=args.reference,
                                   indel=args.indel,
                                   mask_start=int(args.mask_start),
                                   mask_end=int(args.mask_end)))
-qc_line.update(get_qc_data(file=args.qc))
-qc_line.update(get_coverage_stats(file=args.coverage))
-qc_line.update(count_iupac_in_fasta(fasta=args.fasta))
+qc_line.update(qc.get_qc_data(file=args.qc))
+qc_line.update(qc.get_coverage_stats(file=args.coverage))
+qc_line.update(qc.count_iupac_in_fasta(fasta=args.fasta))
 try:
-    meta_data = import_ct_data(file=args.meta)
-    qc_line['ct'] = meta_data[qc_line['sample_name']]
+    meta_data = qc.import_metadata(file=args.meta)
+    qc_line['ct'] = meta_data[qc_line['sample_name']]['ct']
+    qc_line['date'] = meta_data[qc_line['sample_name']]['date']
 except:
     qc_line['ct'] = 'NA'
+    qc_line['date'] = 'NA'
 
-write_qc_summary_header()
-write_qc_summary(summary=qc_line)
+qc.write_qc_summary_header()
+qc.write_qc_summary(summary=qc_line)
