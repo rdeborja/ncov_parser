@@ -2,10 +2,7 @@
 Suite of tests for test for the ncov.parser.qc module
 '''
 import unittest
-from ncov.parser.qc import is_indel, get_total_variants, is_variant_n, \
-    get_qc_data, import_ct_data, create_qc_summary_line, \
-    count_iupac_in_fasta, get_fasta_sequence_length, is_base_masked, \
-    is_indel_triplet
+from ncov.parser.qc import *
 
 class TestQc(unittest.TestCase):
     '''
@@ -27,7 +24,7 @@ class TestQc(unittest.TestCase):
         '''
         A method to test the get_total_variants function without indels.
         '''
-        var_file = 'data/sampleA.variants.tsv'
+        var_file = 'data/illumina/sampleA.variants.tsv'
         fasta_file = 'data/tester.fa'
         total_variants = get_total_variants(file=var_file, reference=fasta_file,
                                             indel=False)
@@ -38,12 +35,12 @@ class TestQc(unittest.TestCase):
         '''
         A method to test the get_total_variants function with indels.
         '''
-        var_file = 'data/sampleA.variants.tsv'
+        var_file = 'data/illumina/sampleA.variants.tsv'
         fasta_file = 'data/tester.fa'
         self.assertEqual(get_total_variants(file=var_file, reference=fasta_file,
                                             indel=True)['total_variants'],
-                         10,
-                         '10 variants')
+                         9,
+                         '9 variants')
 
     def test_is_variant_n_success(self):
         '''
@@ -63,7 +60,7 @@ class TestQc(unittest.TestCase):
         '''
         A method to test the get_qc_data function
         '''
-        qc_data = get_qc_data(file='data/sampleA.qc.csv')
+        qc_data = get_qc_data(file='data/illumina/sampleA.qc.csv')
         self.assertEqual(qc_data['sample_name'], 'sampleA', 'Sample name is: sampleA')
         self.assertEqual(qc_data['pct_covered_bases'], '68.01', 'Percent bases covered: 68.01')
         self.assertEqual(qc_data['qc_pass'], 'FALSE', 'QC pass status: FAIL')
@@ -82,10 +79,10 @@ class TestQc(unittest.TestCase):
         '''
         A method to test the create_qc_summary_line function.
         '''
-        qcfile = 'data/sampleA.qc.csv'
+        qcfile = 'data/illumina/sampleA.qc.csv'
         metafile = 'data/metadata.tsv'
-        varfile = 'data/sampleA.variants.tsv'
-        covfile = 'data/sampleA.per_base_coverage.bed'
+        varfile = 'data/illumina/sampleA.variants.tsv'
+        covfile = 'data/illumina/sampleA.per_base_coverage.bed'
         fasta = 'data/tester.fa'
         qc_summary = create_qc_summary_line(var_file=varfile,
                                             qc_file=qcfile,
@@ -97,7 +94,7 @@ class TestQc(unittest.TestCase):
                          as: sampleA')
         self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
         self.assertEqual(qc_summary['pct_covered_bases'], '68.01', 'pct_covered_bases is 68.01')
-        self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
+        self.assertEqual(qc_summary['total_variants'], 9, 'total_variants is correct')
         self.assertEqual(qc_summary['total_snv'], 9, 'total_snv is correct')
         self.assertEqual(qc_summary['total_indel'], 1, 'total_indel is correct')
         self.assertEqual(qc_summary['total_n'], 13, 'total_n is correct')
@@ -112,9 +109,9 @@ class TestQc(unittest.TestCase):
         '''
         A method to test the create_qc_summary_line_no_meta function
         '''
-        qcfile = 'data/sampleA.qc.csv'
-        varfile = 'data/sampleA.variants.tsv'
-        covfile = 'data/sampleA.per_base_coverage.bed'
+        qcfile = 'data/illumina/sampleA.qc.csv'
+        varfile = 'data/illumina/sampleA.variants.tsv'
+        covfile = 'data/illumina/sampleA.per_base_coverage.bed'
         fasta = 'data/tester.fa'
         qc_summary = create_qc_summary_line(var_file=varfile,
                                             qc_file=qcfile,
@@ -183,6 +180,38 @@ class TestQc(unittest.TestCase):
         variant_succeed = '-AAT'
         self.assertFalse(is_indel_triplet(variant_fail), 'variant is not a triplet')
         self.assertTrue(is_indel_triplet(variant_succeed), 'variant is a triplet')
+
+    def test_get_qc_nanopore_data(self):
+        '''
+        Validate the output from the get_qc_nanopore_data
+        '''
+        fasta = 'data/nanopore/sampleA.consensus.fasta'
+        reference='data/reference.fa'
+        qc_data = get_qc_nanopore_data(fasta=fasta,
+                                       reference=reference)
+        self.assertEqual(qc_data['sample_name'], 'sampleA', 'valid sample name')
+        self.assertEqual(qc_data['pct_n_bases'], '10.08', 'valid pct_n_bases')
+        self.assertEqual(qc_data['pct_covered_bases'], 'NA',
+                         'valid pct_covered_bases')
+        self.assertEqual(qc_data['qc_pass'], 'NA', 'valid qc_pass value')
+
+    def test_get_total_variants_vcf(self):
+        '''
+        Test the output from the get_total_variants_vcf function.
+        '''
+        vcf_file = 'data/nanopore/sampleA.pass.vcf'
+        reference = 'data/tester.fa'
+        vars = get_total_variants_vcf(file=vcf_file, reference=reference,
+                                      mask_start=20, mask_end=20, indel=True)
+        self.assertEqual(vars['total_variants'], 9, 'valid number of variants')
+        self.assertEqual(vars['total_snv'], 5, 'valid number of snv')
+        self.assertEqual(vars['total_indel'], 4, 'valid number of indels')
+        self.assertEqual(vars['total_snv_masked'], 3, 'valid number of masked snvs')
+        self.assertEqual(vars['total_indel_masked'], 1,
+                         'valid number of masked indels')
+        self.assertEqual(vars['total_indel_triplet'], 1,
+                         'valid number of indel triplets')
+
 
 
 if __name__ == '__main__':
