@@ -26,6 +26,8 @@ parser.add_argument('--mask_start', default=100,
                     help='number of bases to mask at start of genome')
 parser.add_argument('--mask_end', default=50,
                     help='number of bases to mask at end of genome')
+parser.add_argument('-n', '--instrument', default='illumina',
+                    help='sequencing platform used {illumina, nanopore}')
 if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
     sys.exit(1)
