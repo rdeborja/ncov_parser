@@ -5,4 +5,5 @@ python:
 install:
     - pip install .
     - pip install biopython
+    - pip install PyVCF
 script: pytest
