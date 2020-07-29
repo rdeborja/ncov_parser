@@ -8,6 +8,7 @@ import statistics
 import glob
 import csv
 import vcf
+import os
 from Bio import SeqIO
 
 
@@ -45,15 +46,15 @@ def get_qc_nanopore_data(fasta, reference, consensus_suffix='.consensus.fa'):
     genome_length = 0
     qc_data = {}
     pct_n_bases = ''
+    sample_name = re.sub(consensus_suffix, '', os.path.basename(fasta))
+
     try:
-        qc_data.update(count_iupac_in_fasta(fasta=fasta))
-        sample_name = re.sub('\.consensus\.fasta', '', os.path.basename(fasta))
         for record in SeqIO.parse(reference, 'fasta'):
             genome_length = len(str(record.seq))
+        qc_data.update(count_iupac_in_fasta(fasta=fasta))
         pct_n_bases = float(qc_data['total_n']) / genome_length * 100
         pct_n_bases = str(round(pct_n_bases, 2))
     except:
-        genome_length = 0
         pct_n_bases = 'NA'
     return {'sample_name': sample_name,
             'pct_n_bases' : pct_n_bases,
@@ -112,6 +113,7 @@ def get_total_variants(file, reference, mask_start=100, mask_end=50,
     counter_indel_masked = 0
     genome_length = 0
     counter_indel_triplet = 0
+    total_variants = 0
     try:
         for record in SeqIO.parse(reference, 'fasta'):
             genome_length = len(str(record.seq))
@@ -148,8 +150,10 @@ def get_total_variants(file, reference, mask_start=100, mask_end=50,
                             counter_snv_masked += 1
                 else:
                     continue
+        total_variants = counter_snv + counter_indel
     file_p.close()
-    return {'total_variants' : counter_snv,
+    return {'total_variants' : total_variants,
+            'total_snv' : counter_snv,
             'total_indel' : counter_indel,
             'total_snv_masked' : counter_snv_masked,
             'total_indel_masked' : counter_indel_masked,
