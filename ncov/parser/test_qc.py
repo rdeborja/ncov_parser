@@ -39,8 +39,8 @@ class TestQc(unittest.TestCase):
         fasta_file = 'data/tester.fa'
         self.assertEqual(get_total_variants(file=var_file, reference=fasta_file,
                                             indel=True)['total_variants'],
-                         9,
-                         '9 variants')
+                         10,
+                         '10 variants')
 
     def test_is_variant_n_success(self):
         '''
@@ -94,7 +94,7 @@ class TestQc(unittest.TestCase):
                          as: sampleA')
         self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
         self.assertEqual(qc_summary['pct_covered_bases'], '68.01', 'pct_covered_bases is 68.01')
-        self.assertEqual(qc_summary['total_variants'], 9, 'total_variants is correct')
+        self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
         self.assertEqual(qc_summary['total_snv'], 9, 'total_snv is correct')
         self.assertEqual(qc_summary['total_indel'], 1, 'total_indel is correct')
         self.assertEqual(qc_summary['total_n'], 13, 'total_n is correct')
@@ -187,8 +187,10 @@ class TestQc(unittest.TestCase):
         '''
         fasta = 'data/nanopore/sampleA.consensus.fasta'
         reference='data/reference.fa'
+        consensus_suffix='.consensus.fasta'
         qc_data = get_qc_nanopore_data(fasta=fasta,
-                                       reference=reference)
+                                       reference=reference,
+                                       consensus_suffix=consensus_suffix)
         self.assertEqual(qc_data['sample_name'], 'sampleA', 'valid sample name')
         self.assertEqual(qc_data['pct_n_bases'], '10.08', 'valid pct_n_bases')
         self.assertEqual(qc_data['pct_covered_bases'], 'NA',
