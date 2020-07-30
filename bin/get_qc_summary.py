@@ -6,14 +6,15 @@ A Python package for summarizing QC data from the ncov-tools pipeline.
 
 import argparse
 import sys
-import ncov.parser.qc as qc
+import ncov.parser as qc
 
 parser = argparse.ArgumentParser(description="Tool for summarizing QC data")
-parser.add_argument('-c', '--qc', help='<sample>.qc.csv file to process')
 parser.add_argument('-v', '--variants',
                     help='<sample>.variants.tsv file to process')
 parser.add_argument('-e', '--coverage',
                     help='<sample>.per_base_coverage.bed file to process')
+parser.add_argument('-c', '--qc', default=None,
+                    help='<sample>.qc.csv file to process')
 parser.add_argument('-i', '--indel', action='store_true',
                     help='flag to determine whether to count indels')
 parser.add_argument('-m', '--meta', default=None,
@@ -33,12 +34,30 @@ if len(sys.argv) == 1:
     sys.exit(1)
 args = parser.parse_args()
 qc_line = {}
-qc_line.update(qc.get_total_variants(file=args.variants,
-                                  reference=args.reference,
-                                  indel=args.indel,
-                                  mask_start=int(args.mask_start),
-                                  mask_end=int(args.mask_end)))
-qc_line.update(qc.get_qc_data(file=args.qc))
+if args.instrument == 'illumina':
+    qc_line.update(qc.get_total_variants(file=args.variants,
+                                         reference=args.reference,
+                                         indel=args.indel,
+                                         mask_start=int(args.mask_start),
+                                         mask_end=int(args.mask_end)))
+#    qc_line.update(qc.get_qc_data(file=args.qc))
+    qc_line.update(qc.get_qc_from_consensus_data(fasta=args.fasta,
+                                                 reference=args.reference,
+                                                 consensus_suffix='.primertrimmed.consensus.fa'))
+elif args.instrument == 'ont':
+    qc_line.update(qc.get_total_variants_vcf(file=args.variants,
+                                             reference=args.reference,
+                                             indel=True,
+                                             mask_start=int(args.mask_start),
+                                             mask_end=int(args.mask_end)))
+    # qc_line.update(qc.get_qc_ont_data(fasta=args.fasta, reference=args.reference,
+    #                                   consensus_suffix='.consensus.fa'))
+    qc_line.update(qc.get_qc_from_consensus_data(fasta=args.fasta, reference=args.reference,
+                                                 consensus_suffix='.consensus.fasta'))
+else:
+    print("Invalid instrument, exiting...")
+    sys.exit(1)
+
 qc_line.update(qc.get_coverage_stats(file=args.coverage))
 qc_line.update(qc.count_iupac_in_fasta(fasta=args.fasta))
 try:
