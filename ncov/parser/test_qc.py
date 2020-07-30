@@ -3,6 +3,8 @@ Suite of tests for test for the ncov.parser.qc module
 '''
 import unittest
 from ncov.parser.qc import *
+from ncov.parser.ont import *
+from ncov.parser.illumina import *
 
 class TestQc(unittest.TestCase):
     '''
@@ -183,14 +185,14 @@ class TestQc(unittest.TestCase):
         self.assertFalse(is_indel_triplet(variant_fail), 'variant is not a triplet')
         self.assertTrue(is_indel_triplet(variant_succeed), 'variant is a triplet')
 
-    def test_get_qc_nanopore_data(self):
+    def test_get_qc_from_consensus_data(self):
         '''
-        Validate the output from the get_qc_nanopore_data
+        Validate the output from the get_qc_ont_data
         '''
-        fasta = 'data/nanopore/sampleA.consensus.fasta'
+        fasta = 'data/ont/sampleA.consensus.fasta'
         reference='data/reference.fa'
         consensus_suffix='.consensus.fasta'
-        qc_data = get_qc_nanopore_data(fasta=fasta,
+        qc_data = get_qc_ont_data(fasta=fasta,
                                        reference=reference,
                                        consensus_suffix=consensus_suffix)
         self.assertEqual(qc_data['sample_name'], 'sampleA', 'valid sample name')
@@ -203,7 +205,7 @@ class TestQc(unittest.TestCase):
         '''
         Test the output from the get_total_variants_vcf function.
         '''
-        vcf_file = 'data/nanopore/sampleA.pass.vcf'
+        vcf_file = 'data/ont/sampleA.pass.vcf'
         reference = 'data/tester.fa'
         vars = get_total_variants_vcf(file=vcf_file, reference=reference,
                                       mask_start=20, mask_end=20, indel=True)
