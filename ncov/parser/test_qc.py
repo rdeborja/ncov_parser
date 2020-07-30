@@ -92,7 +92,8 @@ class TestQc(unittest.TestCase):
                                             fasta=fasta)
         self.assertEqual(qc_summary['sample_name'], 'sampleA', 'Sample name correctly identified \
                          as: sampleA')
-        self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        # self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        self.assertEqual(qc_summary['pct_n_bases'], '10.08', 'pct_n_bases is 10.08')
         self.assertEqual(qc_summary['pct_covered_bases'], '68.01', 'pct_covered_bases is 68.01')
         self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
         self.assertEqual(qc_summary['total_snv'], 9, 'total_snv is correct')
@@ -120,7 +121,8 @@ class TestQc(unittest.TestCase):
                                             fasta=fasta)
         self.assertEqual(qc_summary['sample_name'], 'sampleA', \
                                     'Sample name correctly identified as: sampleA')
-        self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        # self.assertEqual(qc_summary['pct_n_bases'], '31.29', 'pct_n_bases is 31.29')
+        self.assertEqual(qc_summary['pct_n_bases'], '10.08', 'pct_n_bases is 10.08')
         self.assertEqual(qc_summary['pct_covered_bases'], '68.01', \
                                     'pct_covered_bases is 68.01')
         self.assertEqual(qc_summary['total_variants'], 10, 'total_variants is correct')
