@@ -39,7 +39,7 @@ def get_qc_data(file):
 
 def get_qc_nanopore_data(fasta, reference, consensus_suffix='.consensus.fa'):
     '''
-    In the currently pipeline, the <sample>.qc.csv file is not generated for
+    In the current pipeline, the <sample>.qc.csv file is not generated for
     nanopore runs.  We can generate the pct_n_bases and the sample_name and
     leave the remaining fields as NA
     '''
@@ -329,18 +329,23 @@ def count_iupac_in_fasta(fasta):
         occurrences in the FASTA file.  Note that Ns were not considered.
     '''
     iupac_codes = '[RYSWKMBDHV]'
+    n_count = 0
     try:
         for record in SeqIO.parse(fasta, 'fasta'):
             iupac_count = re.subn(iupac_codes, repl='', string=str(record.seq))[1]
             n_count = re.subn('[Nn]', repl='', string=str(record.seq))[1]
             consensus_length = len(str(record.seq))
+            pct_n_bases = n_count / consensus_length * 100
+            pct_n_bases = str(round(pct_n_bases, 2))
         return {'total_n' : n_count,
                 'total_iupac' : iupac_count,
-                'consensus_length' : consensus_length}
+                'consensus_length' : consensus_length,
+                'pct_n_bases' : pct_n_bases}
     except:
         return {'total_n' : 'NA',
                 'total_iupac' : 'NA',
-                'consensus_length' : 'NA'}
+                'consensus_length' : 'NA',
+                'pct_n_bases' : 'NA'}
 
 
 def get_fasta_sequence_length(fasta):
@@ -348,7 +353,7 @@ def get_fasta_sequence_length(fasta):
     Return the length of the genome in the FASTA sequence file.
 
     Arguments:
-        * fasta: full path to the FASTA reference genome file
+        * fasta: full path to the FASTA genome file
 
     Return Value:
         Returns an integer representing the lenght of the reference genome
