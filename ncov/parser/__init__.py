@@ -1,1 +1,3 @@
-from ncov.parser.qc import *
+from .illumina import *
+from .ont import *
+from .qc import *
