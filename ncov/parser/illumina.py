@@ -1,5 +1,5 @@
 '''
-
+A set of functions used in the Illumina pipeline.
 '''
 
 import re
