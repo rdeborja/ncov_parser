@@ -1,5 +1,5 @@
 '''
-
+A set of functions specifically used with the ONT platform.
 '''
 
 import os
