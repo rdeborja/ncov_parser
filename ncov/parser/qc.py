@@ -404,40 +404,36 @@ def write_qc_summary(summary):
         None
     '''
     summary_line = '\t'.join([
-        summary['sample_name'],
-        str(summary['pct_n_bases']),
-        str(summary['pct_covered_bases']),
-        str(summary['total_variants']),
-        str(summary['total_snv']),
-        str(summary['total_snv_masked']),
-        str(summary['total_indel']),
-        str(summary['total_indel_masked']),
-        str(summary['total_indel_triplet']),
-        str(summary['total_n']),
-        str(summary['total_iupac']),
-        str(summary['mean_depth']),
-        str(summary['median_depth']),
-        str(summary['ct']),
-        str(summary['date']),
+        summary['sample'],
+        str(summary['num_consensus_snvs']),
+        str(summary['num_consensus_n']),
+        str(summary['num_consensus_iupac']),
+        str(summary['num_variants_snvs']),
+        str(summary['num_variants_indel']),
+        str(summary['num_variants_indel_triplet']),
+        str(summary['mean_sequencing_depth']),
+        str(summary['median_sequencing_depth']),
+        str(summary['qpcr_ct']),
+        str(summary['collection_date']),
+        str(summary['num_months']),
+        str(summary['genome_completeness']),
         str(summary['qc_pass'])])
     print(summary_line)
 
 
-def write_qc_summary_header(header=['sample_name',
-                                    'pct_n_bases',
-                                    'pct_covered_bases',
-                                    'total_variants',
-                                    'total_snv',
-                                    'total_snv_masked',
-                                    'total_indel',
-                                    'total_indel_masked',
-                                    'total_indel_triplet',
-                                    'total_n',
-                                    'total_iupac',
-                                    'mean_depth',
-                                    'median_depth',
-                                    'ct',
-                                    'date',
+def write_qc_summary_header(header=['sample',
+                                    'num_consensus_snvs',
+                                    'num_consensus_n',
+                                    'num_consensus_iupac',
+                                    'num_variants_snv',
+                                    'num_variants_indel',
+                                    'num_variants_indel_triplet',
+                                    'mean_sequencing_depth',
+                                    'median_sequencing_depth',
+                                    'qpcr_ct',
+                                    'collection_date',
+                                    'num_months',
+                                    'genome_completeness',
                                     'qc_pass']):
     '''
     Write the header for the QC summary data
@@ -469,7 +465,7 @@ def collect_qc_summary_data(path, pattern='.summary.qc.tsv'):
         with open(file) as file_p:
             for line in file_p:
                 # skip the header
-                if re.match("^sample_name\tpct_n_bases\tpct_covered_bases", line):
+                if re.match("^sample\tnum_consensus_snv\tnum_consensus_n", line):
                     continue
                 data.append(line.rstrip())
     return data
