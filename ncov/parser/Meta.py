@@ -3,12 +3,10 @@
 '''
 
 import re
-import statistics
-import glob
 import csv
 import datetime
 
-class Meta:
+class Meta(object):
     '''
     The Meta class for handling the metadata.tsv file.
     '''
