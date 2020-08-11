@@ -41,5 +41,5 @@ class PerBaseCoverage(object):
         file_p.close()
         mean_depth = round(statistics.mean(depth), 1)
         median_depth = round(statistics.median(depth), 1)
-        return {"mean_depth" : mean_depth, "median_depth" : median_depth}
+        return {"mean_sequencing_depth" : mean_depth, "median_sequencing_depth" : median_depth}
 
