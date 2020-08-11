@@ -1,3 +1,7 @@
+'''
+A module for processing the NegativeControl output.
+'''
+
 import re
 import csv
 
