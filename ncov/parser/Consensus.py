@@ -5,14 +5,10 @@ analysis pipeline.
 
 
 import re
-import statistics
-import csv
-import vcf
 import collections
 import pysam
-from Bio import SeqIO
 
-class Consensus(object):
+class Consensus():
     '''
     A class to handle the consensus FASTA file.
     '''
@@ -23,8 +19,8 @@ class Consensus(object):
         '''
         self.file = file
         try:
-            fa = pysam.FastxFile(file)
-            for record in fa:
+            fasta = pysam.FastxFile(file)
+            for record in fasta:
                 samplename = re.sub('.primertrimmed.consensus_threshold_0.75_quality_20$',
                                     '',
                                     record.name)
@@ -62,7 +58,7 @@ class Consensus(object):
         base_counter = collections.Counter()
         for base in self.sequence:
             base_counter.update(base.upper())
-        
+
         total = 0
         for base, count in base_counter.items():
             total += count
@@ -70,4 +66,3 @@ class Consensus(object):
         if total > 0:
             completeness = 1 - (float(base_counter['N']) / total)
         return {'genome_completeness' : completeness}
-
