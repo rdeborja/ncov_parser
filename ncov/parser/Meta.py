@@ -1,12 +1,12 @@
 '''
-
+A module for handling the metadata file.
 '''
 
 import re
 import csv
 import datetime
 
-class Meta(object):
+class Meta():
     '''
     The Meta class for handling the metadata.tsv file.
     '''
@@ -18,6 +18,7 @@ class Meta(object):
         self.file = file
         self.start_date = start_date
         self.delimiter = delimiter
+        self.data = dict()
 
 
     def import_metadata(self, sample_id='sample', ct_id='ct', date_id='date'):
@@ -47,7 +48,7 @@ class Meta(object):
                     else:
                         num_months = 'NA'
                     data[line[sample_id]] = {'qpcr_ct': line[ct_id],
-                                             'collection_date': line[date_id], 
+                                             'collection_date': line[date_id],
                                              'num_months' : num_months}
                 self.data = data
                 return data
@@ -62,12 +63,12 @@ class Meta(object):
             return self.data[sample]
 
 
-def get_number_of_months(date, start_date='2020-01-01', format='%Y-%m-%d'):
+def get_number_of_months(date, start_date='2020-01-01', date_format='%Y-%m-%d'):
     '''
     Get the number of months from the collection date to a start date.
     '''
     required_date_format = '%Y-%m-%d'
     end_date = datetime.datetime.strptime(date, required_date_format)
-    start_date = datetime.datetime.strptime(start_date, format)
+    start_date = datetime.datetime.strptime(start_date, date_format)
     num_months = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
     return num_months
