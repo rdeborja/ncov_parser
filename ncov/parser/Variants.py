@@ -20,7 +20,7 @@ class Variants:
         self.file = file
 
 
-    def get_total_variants(self, indel=False):
+    def get_total_variants(self, indel=True):
         '''
         A method that parses the iVar variants file and returns the total
         number of variants.
