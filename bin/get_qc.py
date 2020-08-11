@@ -3,7 +3,6 @@
 A Python package for summarizing QC data from the ncov-tools pipeline.
 '''
 
-
 import argparse
 import sys
 import ncov.parser.qc as qc
@@ -23,8 +22,6 @@ parser.add_argument('-a', '--alleles',
                     help='full path to the alleles.tsv file')
 parser.add_argument('-s', '--sample',
                     help='name of sample being processed')
-# parser.add_argument('-r', '--reference', default=None,
-#                     help='full path to the reference FASTA file')
 parser.add_argument('-n', '--instrument', default='illumina',
                     help='sequencing instrument technology used')
 if len(sys.argv) == 1:
