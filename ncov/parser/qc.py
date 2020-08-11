@@ -416,6 +416,7 @@ def write_qc_summary(summary):
         str(summary['qpcr_ct']),
         str(summary['collection_date']),
         str(summary['num_months']),
+        str(summary['num_weeks']),
         str(summary['genome_completeness']),
         str(summary['qc_pass'])])
     print(summary_line)
@@ -433,6 +434,7 @@ def write_qc_summary_header(header=['sample',
                                     'qpcr_ct',
                                     'collection_date',
                                     'num_months',
+                                    'num_weeks',
                                     'genome_completeness',
                                     'qc_pass']):
     '''
