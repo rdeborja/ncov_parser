@@ -65,4 +65,5 @@ class Consensus():
         completeness = 0
         if total > 0:
             completeness = 1 - (float(base_counter['N']) / total)
+            completeness = round(completeness, 4)
         return {'genome_completeness' : completeness}
