@@ -45,15 +45,20 @@ class Meta():
                     if line[date_id] != 'NA':
                         num_months = get_number_of_months(date=line[date_id],
                                                           start_date=self.start_date)
+                        num_weeks = get_number_of_weeks(date=line[date_id],
+                                                        start_date=self.start_date)
                     else:
                         num_months = 'NA'
+                        num_weeks = 'NA'
                     data[line[sample_id]] = {'qpcr_ct': line[ct_id],
                                              'collection_date': line[date_id],
-                                             'num_months' : num_months}
+                                             'num_months' : num_months,
+                                             'num_weeks' : num_weeks}
                 self.data = data
                 return data
         except:
             print("Invalid metadata file")
+
 
     def get_meta_for_sample(self, sample):
         '''
@@ -72,3 +77,17 @@ def get_number_of_months(date, start_date='2020-01-01', date_format='%Y-%m-%d'):
     start_date = datetime.datetime.strptime(start_date, date_format)
     num_months = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month)
     return num_months
+
+
+def get_number_of_weeks(date, start_date='2020-01-01', date_format='%Y-%m-%d'):
+    '''
+    Get the number of weeks from the collection date to a start date.
+    '''
+    required_date_format = '%Y-%m-%d'
+    end_date = datetime.datetime.strptime(date, required_date_format)
+    st_date = datetime.datetime.strptime(start_date, date_format)
+    num_weeks = (end_date.year - st_date.year) * 52
+    end_week = int(datetime.datetime.strptime(date, required_date_format).strftime('%V'))
+    start_week = int(datetime.datetime.strptime(start_date, date_format).strftime('%V'))
+    num_weeks = num_weeks + (end_week - start_week)
+    return num_weeks
