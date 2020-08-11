@@ -1,7 +1,9 @@
-import re
+'''
+A Python module for handling variants from a VCF file from the ONT platform.
+'''
 import vcf
 
-class Vcf(object):
+class Vcf():
     '''
     A class for handling VCF files from the ONT platform.
     '''
@@ -25,43 +27,39 @@ class Vcf(object):
         vcf_reader = vcf.Reader(filename=self.file)
         for var in vcf_reader:
             var_id = create_vcf_variant_id(var=var)
-            if var_id in var_dict:
-                continue
-            else:
+            if var_id not in var_dict:
                 var_dict[var_id] = 1
             counter += 1
             if var.is_indel:
                 counter_indel += 1
-                if is_indel_triplet(re.sub('^.', '', str(var.ALT[0]))):
-                    counter_indel_triplet += 1
-                elif is_indel_triplet(re.sub('^.', '', str(var.REF))):
+                if is_indel_triplet(ref=var.REF, alt=var.ALT[0]):
                     counter_indel_triplet += 1
                 else:
                     continue
             if var.is_snp and (len(var.ALT[0]) == 1):
-                print(var.ALT[0])
                 counter_snv += 1
         return {'num_variants_snv' : counter_snv,
                 'num_variants_indel' : counter_indel,
-                'num_variants_indel_triplet' : counter_indel_triplet}            
+                'num_variants_indel_triplet' : counter_indel_triplet}
 
 
-def is_indel_triplet(variant, size=3):
+def is_indel_triplet(ref, alt, size=3):
     '''
     Check whether the indel is 3bp in size.  We will be using this to infer potential
     frameshift indels.
 
     Arguments:
-        * variants: a string represent the variant
+        * ref:      a string representing the reference alleles
+        * alt:      a string representing the alternate alleles
         * size:     size of a codon indicating a frameshift
 
     Return Value:
         Function returns a boolean
     '''
     # remove the leading +/- from the variant
-    variant = re.sub('^[+-]', '', variant)
-    if len(variant) > 0:
-        return not len(variant) % size
+    indel_length = abs(len(str(ref)) - len(str(alt)))
+    if indel_length > 0:
+        return not indel_length % size
 
 
 def create_vcf_variant_id(var):
