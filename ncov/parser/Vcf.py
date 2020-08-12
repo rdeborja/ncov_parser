@@ -38,7 +38,7 @@ class Vcf():
                     continue
             if var.is_snp and (len(var.ALT[0]) == 1):
                 counter_snv += 1
-        return {'num_variants_snv' : counter_snv,
+        return {'num_variants_snvs' : counter_snv,
                 'num_variants_indel' : counter_indel,
                 'num_variants_indel_triplet' : counter_indel_triplet}
 
