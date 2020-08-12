@@ -4,7 +4,6 @@ python:
     - "3.7"
 install:
     - pip install .
-    - pip install biopython
     - pip install pyvcf
     - pip install pysam
 script: pytest
