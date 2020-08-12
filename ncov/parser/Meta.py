@@ -20,7 +20,7 @@ class Meta():
         if os.path.exists(file):
             self.file = file
         else:
-            sys.exit("Invalid or missing file.")
+            return None
         self.start_date = start_date
         self.delimiter = delimiter
         self.data = dict()

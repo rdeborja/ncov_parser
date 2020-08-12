@@ -5,13 +5,13 @@
 The `ncov_parser` package provides a suite of tools to parse the files generated
 in the Nextflow workflow and provide a QC summary file.  The package requires
 several files including:
-* <sample>.variants.tsv
-* <sample>.qc.csv
+* <sample>.variants.tsv/<sample>.pass.vcf
 * <sample>.per_base_coverage.bed
 * <sample>.primertrimmed.consensus.fa
-* <reference genome>.fa
+* alleles.tsv
 
-An optional metadata file with `ct` values can be included.
+An optional metadata file with qPCR ct and collection date values can be
+included.
 
 In addition, `bedtools` should be run to generate a
 `<sample>.per_base_coverage.bed` file to generate mean and median depth of
@@ -21,8 +21,8 @@ coverage statistics.
 ## Installation
 After downloading the repository, the package can be installed using `pip`:
 ```
-git clone git@github.com:rdeborja/ncov_parser.git
-cd ncov_parser
+git clone git@github.com:jts/ncov-tools.git
+cd ncov-tools/parser
 pip install .
 ```
 
@@ -30,37 +30,36 @@ pip install .
 ## Usage
 The library consists of several functions that can be imported.
 ```
-from ncov.parser.qc import *
+import ncov.parser
 ```
-Similarly, you can import only those functions of interesting, this can include:
+Several classes are available representing the different files that can
+be processed.
 ```
-get_qc_data
-get_total_variants
-import_ct_data
-is_variant_n
-is_variant_iupac
-count_iupac_in_fasta
-get_fasta_sequence_length
-is_base_masked
-is_indel
-is_indel_triplet
-get_coverage_stats
-create_qc_summary_line
-write_qc_summary
-write_qc_summary_header
-collect_qc_summary_data
+ncov.parser.Alleles
+ncov.parser.Consensus
+ncov.parser.Meta
+ncov.parser.PerBaseCoverage
+ncov.parser.Variants
+ncov.parser.Vcf
+```
+
+Similarly, wrapper scripts for creating a standard format output can be found in
+`ncov.parser.qc`
+```
+import ncov.parser.qc as qc
+qc.write_qc_summary_header()
+qc.write_qc_summary()
 ```
 
 ### Top levels scripts
 In the `bin` directory, several wrapper scripts exist to assist in generating
 QC metrics.
 
-To create sample level summary qc files, use the `get_qc_summary.py` script:
+To create sample level summary qc files, use the `get_qc.py` script:
 ```
-get_qc_summary.py --qc <sample>.qc.csv --variants <sample>.variants.tsv
+get_qc_summary.py --variants <sample>.variants.tsv or <sample>.pass.vcf
 --coverage <sample>.per_base_coverage.bed --meta <metadata>.tsv
---fasta <sample>.primertrimmed.consensus.fa --reference <reference genome>.fa
-[--indel] [--mask_start 100] [--mask_end 50]
+--consensus <sample>.primertrimmed.consensus.fa [--indel]
 ```
 
 Note the `--indel` flag should only be present if indels will be used in the

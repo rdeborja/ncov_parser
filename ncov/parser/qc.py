@@ -4,9 +4,7 @@ generated file contains a header line and a data line with pre-defined columns.
 '''
 
 import re
-import statistics
 import glob
-import csv
 
 
 def write_qc_summary(summary):
@@ -98,7 +96,7 @@ def collect_qc_summary_data(path, pattern='.summary.qc.tsv'):
         with open(file) as file_p:
             for line in file_p:
                 # skip the header
-                if re.match("^sample\tnum_consensus_snv\tnum_consensus_n", line):
+                if re.match("^sample\tnum_consensus_snvs\tnum_consensus_n", line):
                     continue
                 data.append(line.rstrip())
     return data

@@ -31,9 +31,14 @@ args = parser.parse_args()
 
 qc_line = dict()
 qc_line.update({'sample' : args.sample})
-meta = ncov.parser.Meta(file=args.meta)
-meta.import_metadata()
-qc_line.update(meta.data[args.sample])
+
+try:
+    meta = ncov.parser.Meta(file=args.meta)
+    meta.import_metadata()
+    qc_line.update(meta.data[args.sample])
+except:
+    qc_line.update({'qpcr_ct' : 'NA', 'collection_date' : 'NA',
+                    'num_months' : 'NA', 'num_weeks' : 'NA'})
 
 if args.instrument == 'illumina':
     if str(args.variants).endswith('.variants.tsv'):
