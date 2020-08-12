@@ -28,10 +28,9 @@ if len(sys.argv) == 1:
     parser.print_help(sys.stderr)
     sys.exit(1)
 args = parser.parse_args()
+
 qc_line = dict()
-
 qc_line.update({'sample' : args.sample})
-
 meta = ncov.parser.Meta(file=args.meta)
 meta.import_metadata()
 qc_line.update(meta.data[args.sample])
@@ -46,7 +45,7 @@ if args.instrument == 'illumina':
 elif args.instrument == 'ont':
     if str(args.variants).endswith('.vcf'):
         vars = ncov.parser.Vcf(file=args.variants)
-        qc_line.update(vars.get_total_variants())
+        qc_line.update(vars.get_variant_counts())
     else:
         print('Invalid variant filetype for ont platform')
         sys.exit(1)
