@@ -1,6 +1,9 @@
 '''
 A Python module for handling variants from a VCF file from the ONT platform.
 '''
+
+import os
+import sys
 import vcf
 
 class Vcf():
@@ -12,7 +15,10 @@ class Vcf():
         '''
         Initialize the CovVcf object.
         '''
-        self.file = file
+        if os.path.exists(file):
+            self.file = file
+        else:
+            sys.exit("Invalid or missing file.")
 
 
     def get_variant_counts(self):

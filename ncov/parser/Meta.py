@@ -2,6 +2,8 @@
 A module for handling the metadata file.
 '''
 
+import os
+import sys
 import re
 import csv
 import datetime
@@ -15,7 +17,10 @@ class Meta():
         '''
         Initialize the Meta object.
         '''
-        self.file = file
+        if os.path.exists(file):
+            self.file = file
+        else:
+            sys.exit("Invalid or missing file.")
         self.start_date = start_date
         self.delimiter = delimiter
         self.data = dict()

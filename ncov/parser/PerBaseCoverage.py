@@ -1,7 +1,10 @@
 '''
-
+A module to process the .per_base_coverage.bed file from
+the nCoV pipeline.
 '''
 
+import os
+import sys
 import statistics
 import csv
 
@@ -16,7 +19,10 @@ class PerBaseCoverage(object):
         '''
         Initialize the PerBaseCoverage class.
         '''
-        self.file = file
+        if os.path.exists(file):
+            self.file = file
+        else:
+            sys.exit("Invalid or missing file.")
         self.delimiter = delimiter
 
 

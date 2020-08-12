@@ -2,6 +2,8 @@
 A module for processing the NegativeControl output.
 '''
 
+import os
+import sys
 import re
 import csv
 
@@ -14,7 +16,10 @@ class NegativeControl(object):
         '''
         Initialize the object
         '''
-        self.file = file
+        if os.path.exists(file):
+            self.file = file
+        else:
+            sys.exit("Invalid or missing file.")
         self.delimiter = delimiter
     
 

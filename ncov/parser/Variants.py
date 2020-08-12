@@ -2,6 +2,8 @@
 A Pythone module for handling variant.tsv files from nCoV pipelin.
 '''
 
+import os
+import sys
 import re
 import csv
 
@@ -14,7 +16,10 @@ class Variants():
         '''
         Initialize the object with the variants.tsv file
         '''
-        self.file = file
+        if os.path.exists(file):
+            self.file = file
+        else:
+            sys.exit("Invalid or missing file.")
         self.delimiter = delimiter
 
 
