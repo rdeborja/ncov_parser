@@ -1,5 +1,9 @@
 # ncov_parser
 
+# THIS PACKAGE HAS BEEN DEPRECATED AND WILL NO LONGER BE UPDATED
+PLEASE SEE https://github.com/jts/ncov-tools for an updated version of the package.
+
+
 [![Build Status](https://travis-ci.com/rdeborja/ncov_parser.svg?branch=master)](https://travis-ci.com/rdeborja/ncov_parser) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The `ncov_parser` package provides a suite of tools to parse the files generated
